@@ -1,12 +1,17 @@
 ﻿services:
   booking-manager:
     image: booking-manager
-    build:
-      context: ./BookingManager
-      dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=${SQL_CONNECTION_STRING}
+      - SQL_SERVER=${SQL_SERVER}
+      - SQL_DATABASE=${SQL_DATABASE}
+      - SQL_USER=${SQL_USER}
+      - SQL_PASSWORD=${SQL_PASSWORD}
+    build:
+      context: .
+      dockerfile: BookingManager/Dockerfile
     depends_on:
       - db
     ports:
@@ -18,13 +23,13 @@
     container_name: booking-manager-db
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SQL_SERVER_SA_PASSWORD}
+      - SA_PASSWORD=${SQL_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
       - booking-manager-db-data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_SERVER_SA_PASSWORD}", "-Q", "SELECT 1"]
+      test: ["CMD", "sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_PASSWORD}", "-Q", "SELECT 1"]
       interval: 30s
       retries: 3
       start_period: 30s
