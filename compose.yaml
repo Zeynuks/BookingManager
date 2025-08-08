@@ -1,0 +1,35 @@
+﻿services:
+  booking-manager:
+    image: booking-manager
+    build:
+      context: ./BookingManager
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${SQL_CONNECTION_STRING}
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: booking-manager-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_SERVER_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - booking-manager-db-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_SERVER_SA_PASSWORD}", "-Q", "SELECT 1"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
+
+volumes:
+  booking-manager-db-data:
+    driver: local
