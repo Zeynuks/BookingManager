@@ -10,7 +10,8 @@ namespace BookingManager.Extensions
 
     public static class DatabaseInitializer
     {
-        public static void AddBookingManagerDatabase( this IServiceCollection services,
+        public static void AddBookingManagerDatabase( 
+            this IServiceCollection services,
             IConfiguration configuration,
             IHostEnvironment environment )
         {
