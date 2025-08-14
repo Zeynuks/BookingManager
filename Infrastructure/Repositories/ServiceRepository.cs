@@ -18,19 +18,19 @@ namespace Infrastructure.Repositories
             return await _dbContext.Set<Service>().FirstOrDefaultAsync( x => x.Id == id, ct );
         }
 
-        public async Task<List<Service>> List( CancellationToken ct )
+        public async Task<List<Service>> GetList( CancellationToken ct )
         {
             return await _dbContext.Set<Service>().ToListAsync( ct );
         }
 
-        public async Task<List<Service>> ListByIds( IReadOnlyCollection<int> ids, CancellationToken ct )
+        public async Task<List<Service>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken ct )
         {
             return await _dbContext.Set<Service>()
                 .Where( s => ids.Contains( s.Id ) )
                 .ToListAsync( ct );
         }
 
-        public async Task<List<Service>> ListByRoomType( int roomTypeId, CancellationToken ct )
+        public async Task<List<Service>> GetListByRoomType( int roomTypeId, CancellationToken ct )
         {
             return await _dbContext.Set<Service>()
                 .Where( s => s.RoomTypes.Any( t => t.Id == roomTypeId ) )

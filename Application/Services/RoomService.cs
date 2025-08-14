@@ -37,7 +37,7 @@ namespace Application.Services
                 room.Number );
         }
 
-        public async Task<IReadOnlyList<RoomReadDto>> ListByRoomTypeId( int roomTypeId, CancellationToken ct )
+        public async Task<IReadOnlyList<RoomReadDto>> GetListByRoomTypeId( int roomTypeId, CancellationToken ct )
         {
             RoomType? roomType = await _roomTypesRepository.Get( roomTypeId, ct );
             if ( roomType is null )
@@ -45,7 +45,7 @@ namespace Application.Services
                 throw new DomainNotFoundException( $"Room with ID {roomTypeId} could not be found." );
             }
 
-            List<Room> rooms = await _roomRepository.ListByRoomType( roomTypeId, ct );
+            List<Room> rooms = await _roomRepository.GetListByRoomType( roomTypeId, ct );
 
             return rooms
                 .Select( r => new RoomReadDto(

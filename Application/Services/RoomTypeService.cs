@@ -48,7 +48,7 @@ namespace Application.Services
                 roomType.Amenities.Select( a => new AmenityReadDto( a.Id, a.Name ) ).ToList() );
         }
 
-        public async Task<IReadOnlyList<RoomTypeReadDto>> ListByProperty( int propertyId, CancellationToken ct )
+        public async Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId, CancellationToken ct )
         {
             Property? property = await _propertyRepository.Get( propertyId, ct );
             if ( property is null )
@@ -56,7 +56,7 @@ namespace Application.Services
                 throw new DomainNotFoundException( $"Property with ID {propertyId} could not be found." );
             }
 
-            List<RoomType> roomTypes = await _roomTypeRepository.ListByProperty( property.Id, ct );
+            List<RoomType> roomTypes = await _roomTypeRepository.GetListByProperty( property.Id, ct );
 
             return roomTypes
                 .Select( roomType => new RoomTypeReadDto(
@@ -87,7 +87,7 @@ namespace Application.Services
 
             if ( dto.ServiceIds is { Count: > 0 } )
             {
-                List<Service> services = await _serviceRepository.ListByIds( dto.ServiceIds, ct );
+                List<Service> services = await _serviceRepository.GetListByIds( dto.ServiceIds, ct );
                 EnsureAllFound( dto.ServiceIds, services.Select( x => x.Id ).ToList(), "Service" );
                 foreach ( Service s in services )
                 {
@@ -97,7 +97,7 @@ namespace Application.Services
 
             if ( dto.AmenityIds is { Count: > 0 } )
             {
-                List<Amenity> amenities = await _amenityRepository.ListByIds( dto.AmenityIds, ct );
+                List<Amenity> amenities = await _amenityRepository.GetListByIds( dto.AmenityIds, ct );
                 EnsureAllFound( dto.AmenityIds, amenities.Select( x => x.Id ).ToList(), "Amenity" );
                 foreach ( Amenity a in amenities )
                 {
@@ -131,7 +131,7 @@ namespace Application.Services
                     roomType.Services,
                     dto.ServiceIds,
                     s => s.Id,
-                    ids => _serviceRepository.ListByIds( ids, ct ),
+                    ids => _serviceRepository.GetListByIds( ids, ct ),
                     ( service ) => roomType.AddService( service ),
                     ( service ) => roomType.RemoveService( service ) );
             }
@@ -142,7 +142,7 @@ namespace Application.Services
                     roomType.Amenities,
                     dto.AmenityIds,
                     a => a.Id,
-                    ids => _amenityRepository.ListByIds( ids, ct ),
+                    ids => _amenityRepository.GetListByIds( ids, ct ),
                     ( amenity ) => roomType.AddAmenity( amenity ),
                     ( amenity ) => roomType.RemoveAmenity( amenity ) );
             }

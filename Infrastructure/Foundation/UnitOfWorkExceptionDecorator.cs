@@ -6,18 +6,18 @@ namespace Infrastructure.Foundation
 {
     public class UnitOfWorkExceptionDecorator : IUnitOfWork
     {
-        private readonly IUnitOfWork _inner;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UnitOfWorkExceptionDecorator( IUnitOfWork inner )
+        public UnitOfWorkExceptionDecorator( IUnitOfWork unitOfWork )
         {
-            _inner = inner;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task CommitAsync( CancellationToken ct )
         {
             try
             {
-                await _inner.CommitAsync( ct );
+                await _unitOfWork.CommitAsync( ct );
             }
             catch ( DbUpdateConcurrencyException ex )
             {
@@ -31,11 +31,10 @@ namespace Infrastructure.Foundation
             {
                 throw new DatabaseUnavailableException( "Database is unavailable.", ex );
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                throw new Exception("Unexpected infrastructure error occurred.", ex);
+                throw new Exception( "Unexpected infrastructure error occurred.", ex );
             }
-            
         }
 
         private static bool IsUniqueConstraintViolation( DbUpdateException ex )

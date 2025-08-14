@@ -30,7 +30,7 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PagedResultDto<ReservationReadDto>> List(
+        public async Task<PagedResultDto<ReservationReadDto>> GetList(
             ReservationSearchQueryDto query,
             CancellationToken ct )
         {

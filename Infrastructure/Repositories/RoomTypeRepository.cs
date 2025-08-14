@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync( x => x.Id == id, ct );
         }
 
-        public async Task<List<RoomType>> ListByProperty( int propertyId, CancellationToken ct )
+        public async Task<List<RoomType>> GetListByProperty( int propertyId, CancellationToken ct )
         {
             return await _dbContext.Set<RoomType>()
                 .Where( x => x.PropertyId == propertyId )

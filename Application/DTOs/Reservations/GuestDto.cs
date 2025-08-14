@@ -18,32 +18,4 @@ namespace Application.DTOs.Reservations
             PhoneNumber = phoneNumber;
         }
     }
-
-    public class GuestCreateDto : GuestDto
-    {
-        public GuestCreateDto( string name, string phoneNumber )
-            : base( name, phoneNumber )
-        {
-        }
-    }
-
-    public class GuestReadDto : GuestDto
-    {
-        [Required]
-        public int Id { get; init; }
-
-        public GuestReadDto( int id, string name, string phoneNumber )
-            : base( name, phoneNumber )
-        {
-            Id = id;
-        }
-    }
-
-    public class GuestUpdateDto : GuestDto
-    {
-        public GuestUpdateDto( string name, string phoneNumber )
-            : base( name, phoneNumber )
-        {
-        }
-    }
 }

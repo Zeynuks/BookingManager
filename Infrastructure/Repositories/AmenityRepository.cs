@@ -15,36 +15,42 @@ namespace Infrastructure.Repositories
 
         public async Task<Amenity?> Get( int id, CancellationToken ct )
         {
-            return await _dbContext.Set<Amenity>().FirstOrDefaultAsync( x => x.Id == id, ct );
+            return await _dbContext.Amenities
+                .AsNoTracking()
+                .FirstOrDefaultAsync( x => x.Id == id, ct );
         }
 
-        public async Task<List<Amenity>> List( CancellationToken ct )
+        public async Task<List<Amenity>> GetList( CancellationToken ct )
         {
-            return await _dbContext.Set<Amenity>().ToListAsync( ct );
+            return await _dbContext.Amenities
+                .AsNoTracking()
+                .ToListAsync( ct );
         }
 
-        public async Task<List<Amenity>> ListByIds( IReadOnlyCollection<int> ids, CancellationToken ct )
+        public async Task<List<Amenity>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken ct )
         {
-            return await _dbContext.Set<Amenity>()
+            return await _dbContext.Amenities
+                .AsNoTracking()
                 .Where( a => ids.Contains( a.Id ) )
                 .ToListAsync( ct );
         }
 
-        public async Task<List<Amenity>> ListByRoomType( int roomTypeId, CancellationToken ct )
+        public async Task<List<Amenity>> GetListByRoomType( int roomTypeId, CancellationToken ct )
         {
-            return await _dbContext.Set<Amenity>()
-                .Where( s => s.RoomTypes.Any( t => t.Id == roomTypeId ) )
+            return await _dbContext.Amenities
+                .AsNoTracking()
+                .Where( a => a.RoomTypes.Any( t => t.Id == roomTypeId ) )
                 .ToListAsync( ct );
         }
 
         public void Add( Amenity amenity )
         {
-            _dbContext.Add( amenity );
+            _dbContext.Amenities.Add( amenity );
         }
 
         public void Delete( Amenity amenity )
         {
-            _dbContext.Set<Amenity>().Remove( amenity );
+            _dbContext.Amenities.Remove( amenity );
         }
     }
 }

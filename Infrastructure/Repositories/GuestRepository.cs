@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
             return await _dbContext.Set<Guest>().FirstOrDefaultAsync( x => x.Id == id, ct );
         }
 
-        public async Task<List<Guest>> List( CancellationToken ct )
+        public async Task<List<Guest>> GetList( CancellationToken ct )
         {
             return await _dbContext.Set<Guest>().ToListAsync( ct );
         }

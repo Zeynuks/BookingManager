@@ -21,7 +21,7 @@ namespace Application.Services
             _roomTypeQueryBuilder = roomTypeQueryBuilder;
         }
 
-        public async Task<PagedResultDto<RoomTypeReadDto>> List(
+        public async Task<PagedResultDto<RoomTypeReadDto>> GetList(
             RoomTypeSearchQueryDto query,
             CancellationToken ct )
         {

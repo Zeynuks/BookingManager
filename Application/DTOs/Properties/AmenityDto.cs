@@ -13,29 +13,4 @@ namespace Application.DTOs.Properties
             Name = name;
         }
     }
-
-    public class AmenityCreateDto : AmenityDto
-    {
-        public AmenityCreateDto( string name ) : base( name )
-        {
-        }
-    }
-
-    public class AmenityReadDto : AmenityDto
-    {
-        [Required]
-        public int Id { get; init; }
-
-        public AmenityReadDto( int id, string name ) : base( name )
-        {
-            Id = id;
-        }
-    }
-
-    public class AmenityUpdateDto : AmenityDto
-    {
-        public AmenityUpdateDto( string name ) : base( name )
-        {
-        }
-    }
 }

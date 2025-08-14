@@ -29,9 +29,9 @@ namespace Application.Services
             return new GuestReadDto( guest.Id, guest.Name, guest.PhoneNumber );
         }
 
-        public async Task<IReadOnlyList<GuestReadDto>> List( CancellationToken ct )
+        public async Task<IReadOnlyList<GuestReadDto>> GetList( CancellationToken ct )
         {
-            List<Guest> guests = await _guestRepository.List( ct );
+            List<Guest> guests = await _guestRepository.GetList( ct );
 
             return guests.Select( guest => new GuestReadDto( guest.Id, guest.Name, guest.PhoneNumber ) ).ToList();
         }

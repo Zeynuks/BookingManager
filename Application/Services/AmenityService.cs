@@ -29,16 +29,16 @@ namespace Application.Services
             return new AmenityReadDto( amenity.Id, amenity.Name );
         }
 
-        public async Task<IReadOnlyList<AmenityReadDto>> List( CancellationToken ct )
+        public async Task<IReadOnlyList<AmenityReadDto>> GetList( CancellationToken ct )
         {
-            List<Amenity> amenities = await _amenityRepository.List( ct );
+            List<Amenity> amenities = await _amenityRepository.GetList( ct );
 
             return amenities.Select( amenity => new AmenityReadDto( amenity.Id, amenity.Name ) ).ToList();
         }
 
-        public async Task<IReadOnlyList<AmenityReadDto>> ListByRoomType( int roomTypeId, CancellationToken ct )
+        public async Task<IReadOnlyList<AmenityReadDto>> GetListByRoomType( int roomTypeId, CancellationToken ct )
         {
-            List<Amenity> amenities = await _amenityRepository.ListByRoomType( roomTypeId, ct );
+            List<Amenity> amenities = await _amenityRepository.GetListByRoomType( roomTypeId, ct );
 
             return amenities.Select( amenity => new AmenityReadDto( amenity.Id, amenity.Name ) ).ToList();
         }

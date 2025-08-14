@@ -29,16 +29,16 @@ namespace Application.Services
             return new ServiceReadDto( service.Id, service.Name );
         }
 
-        public async Task<IReadOnlyList<ServiceReadDto>> List( CancellationToken ct )
+        public async Task<IReadOnlyList<ServiceReadDto>> GetList( CancellationToken ct )
         {
-            List<Service> services = await _serviceRepository.List( ct );
+            List<Service> services = await _serviceRepository.GetList( ct );
 
             return services.Select( service => new ServiceReadDto( service.Id, service.Name ) ).ToList();
         }
 
-        public async Task<IReadOnlyList<ServiceReadDto>> ListByRoomType( int roomTypeId, CancellationToken ct )
+        public async Task<IReadOnlyList<ServiceReadDto>> GetListByRoomType( int roomTypeId, CancellationToken ct )
         {
-            List<Service> services = await _serviceRepository.ListByRoomType( roomTypeId, ct );
+            List<Service> services = await _serviceRepository.GetListByRoomType( roomTypeId, ct );
 
             return services.Select( service => new ServiceReadDto( service.Id, service.Name ) ).ToList();
         }

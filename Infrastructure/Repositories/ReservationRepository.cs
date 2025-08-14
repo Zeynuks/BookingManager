@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
             return await _dbContext.Set<Reservation>().FirstOrDefaultAsync( x => x.Id == id, ct );
         }
 
-        public async Task<List<Reservation>> List( CancellationToken ct )
+        public async Task<List<Reservation>> GetList( CancellationToken ct )
         {
             return await _dbContext.Set<Reservation>().ToListAsync( ct );
         }

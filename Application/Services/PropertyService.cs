@@ -38,9 +38,9 @@ namespace Application.Services
                 property.Currency.ToString() );
         }
 
-        public async Task<IReadOnlyList<PropertyReadDto>> List( CancellationToken ct )
+        public async Task<IReadOnlyList<PropertyReadDto>> GetList( CancellationToken ct )
         {
-            List<Property> properties = await _propertyRepository.List( ct );
+            List<Property> properties = await _propertyRepository.GetList( ct );
 
             return properties
                 .Select( property => new PropertyReadDto(

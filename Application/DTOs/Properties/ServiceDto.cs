@@ -13,29 +13,4 @@ namespace Application.DTOs.Properties
             Name = name;
         }
     }
-
-    public class ServiceCreateDto : ServiceDto
-    {
-        public ServiceCreateDto( string name ) : base( name )
-        {
-        }
-    }
-
-    public class ServiceReadDto : ServiceDto
-    {
-        [Required]
-        public int Id { get; init; }
-
-        public ServiceReadDto( int id, string name ) : base( name )
-        {
-            Id = id;
-        }
-    }
-
-    public class ServiceUpdateDto : ServiceDto
-    {
-        public ServiceUpdateDto( string name ) : base( name )
-        {
-        }
-    }
 }
