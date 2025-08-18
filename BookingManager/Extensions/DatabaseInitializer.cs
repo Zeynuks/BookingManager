@@ -3,39 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingManager.Extensions
 {
-    public sealed class DatabaseRuntimeOptions
-    {
-        public bool UseInMemory { get; init; }
-    }
-
     public static class DatabaseInitializer
     {
-        public static void AddBookingManagerDatabase( 
+        public static void AddBookingManagerDatabase(
             this IServiceCollection services,
-            IConfiguration configuration,
-            IHostEnvironment environment )
+            IConfiguration configuration )
         {
-            bool configuredUseInMemory = configuration.GetValue<bool>( "UseInMemoryDatabase" );
-            bool isTesting = environment.IsEnvironment( "Testing" );
-
-            string? fromConfig = configuration.GetConnectionString( "Default" );
-            string? resolved = ResolveConnectionString( fromConfig );
-
-            bool finalUseInMemory = configuredUseInMemory || isTesting || string.IsNullOrWhiteSpace( resolved );
-
-            if ( string.IsNullOrWhiteSpace( resolved ) && !finalUseInMemory )
-            {
-                finalUseInMemory = true;
-            }
-
-            services.AddSingleton( new DatabaseRuntimeOptions
-            {
-                UseInMemory = finalUseInMemory
-            } );
+            string? resolved = ResolveConnectionString( configuration );
 
             services.AddDbContext<BookingManagerDbContext>( options =>
             {
-                if ( finalUseInMemory )
+                if ( string.IsNullOrWhiteSpace( resolved ) )
                 {
                     options.UseLazyLoadingProxies().UseInMemoryDatabase( "BookingManagerDb" );
                 }
@@ -52,21 +30,28 @@ namespace BookingManager.Extensions
         public static void InitBookingManagerDatabase( this WebApplication app )
         {
             using IServiceScope scope = app.Services.CreateScope();
-            DatabaseRuntimeOptions runtime = scope.ServiceProvider.GetRequiredService<DatabaseRuntimeOptions>();
             BookingManagerDbContext db = scope.ServiceProvider.GetRequiredService<BookingManagerDbContext>();
 
-            if ( runtime.UseInMemory )
+            bool isInMemory = db.Database.ProviderName != null
+                              && db.Database.ProviderName.Contains( "InMemory", StringComparison.OrdinalIgnoreCase );
+
+            if ( isInMemory )
             {
                 db.Database.EnsureCreated();
             }
-            else
+            else if ( db.Database.CanConnect() )
             {
                 db.Database.Migrate();
             }
+            else
+            {
+                throw new InvalidOperationException( "Can't connect to database." );
+            }
         }
 
-        private static string? ResolveConnectionString( string? fromConfig )
+        private static string? ResolveConnectionString( IConfiguration configuration )
         {
+            string? fromConfig = configuration.GetConnectionString( "Default" );
             if ( !string.IsNullOrWhiteSpace( fromConfig ) )
             {
                 return fromConfig;
@@ -82,8 +67,8 @@ namespace BookingManager.Extensions
                  && !string.IsNullOrWhiteSpace( user )
                  && !string.IsNullOrWhiteSpace( password ) )
             {
-                return
-                    $"Server={server};Database={database};User Id={user};Password={password};Encrypt=False;TrustServerCertificate=True";
+                return $"Server={server};Database={database};User Id={user};" +
+                       $"Password={password};Encrypt=False;TrustServerCertificate=True";
             }
 
             return null;

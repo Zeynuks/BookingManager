@@ -33,7 +33,7 @@ namespace BookingManager
             builder.Services.AddControllers();
 
             builder.Services.AddBindings();
-            builder.Services.AddBookingManagerDatabase( builder.Configuration, builder.Environment );
+            builder.Services.AddBookingManagerDatabase( builder.Configuration );
 
             WebApplication app = builder.Build();
 
@@ -49,9 +49,7 @@ namespace BookingManager
                 } );
             }
 
-            app.UseHttpsRedirection();
             app.MapControllers();
-
             app.InitBookingManagerDatabase();
 
             app.Run();

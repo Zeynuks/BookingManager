@@ -1,6 +1,7 @@
 ﻿services:
   booking-manager:
     image: booking-manager
+    container_name: booking-manager-app
     env_file:
       - .env
     environment:
@@ -9,12 +10,13 @@
       - SQL_DATABASE=${SQL_DATABASE}
       - SQL_USER=${SQL_USER}
       - SQL_PASSWORD=${SQL_PASSWORD}
-      - UseInMemoryDatabase=false
     build:
       context: .
       dockerfile: BookingManager/Dockerfile
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: on-failure
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -24,13 +26,12 @@
     container_name: booking-manager-db
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SQL_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
       - booking-manager-db-data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_PASSWORD}", "-Q", "SELECT 1"]
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/1433' || exit 1"]
       interval: 30s
       retries: 3
       start_period: 30s
