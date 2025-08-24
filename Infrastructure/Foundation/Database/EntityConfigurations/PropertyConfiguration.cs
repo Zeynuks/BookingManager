@@ -36,7 +36,7 @@ namespace Infrastructure.Foundation.Database.EntityConfigurations
                 .IsRequired();
 
             builder.Property( p => p.Currency )
-                .IsRequired(); 
+                .IsRequired();
 
             builder.HasIndex( p => new
                 {

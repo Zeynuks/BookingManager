@@ -19,12 +19,12 @@ namespace BookingManager
                 c.SwaggerDoc( "properties", new OpenApiInfo
                 {
                     Title = "Properties API",
-                    Version = "v1",
+                    Version = "v1"
                 } );
                 c.SwaggerDoc( "reservations", new OpenApiInfo
                 {
                     Title = "Reservations API",
-                    Version = "v1",
+                    Version = "v1"
                 } );
 
                 c.DocInclusionPredicate( ( doc, api ) =>

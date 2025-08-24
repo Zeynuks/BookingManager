@@ -26,7 +26,8 @@ namespace Infrastructure.Repositories
                 .ToListAsync( cancellationToken );
         }
 
-        public async Task<IReadOnlyList<Service>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Service>> GetListByIds( IReadOnlyCollection<int> ids,
+            CancellationToken cancellationToken )
         {
             return await _dbContext.Services
                 .Where( s => ids.Contains( s.Id ) )

@@ -16,7 +16,7 @@ namespace Domain.Entities
         public decimal Longitude { get; private set; }
         public Currency Currency { get; private set; }
 
-        public virtual  IReadOnlyCollection<RoomType> RoomTypes => _roomTypes;
+        public virtual IReadOnlyCollection<RoomType> RoomTypes => _roomTypes;
 
         protected Property() { }
 

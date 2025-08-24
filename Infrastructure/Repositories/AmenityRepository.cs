@@ -26,7 +26,8 @@ namespace Infrastructure.Repositories
                 .ToListAsync( cancellationToken );
         }
 
-        public async Task<IReadOnlyList<Amenity>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Amenity>> GetListByIds( IReadOnlyCollection<int> ids,
+            CancellationToken cancellationToken )
         {
             return await _dbContext.Amenities
                 .AsNoTracking()

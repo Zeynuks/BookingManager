@@ -16,7 +16,7 @@ namespace Infrastructure.Foundation.Database.EntityConfigurations
                 .IsRequired();
 
             builder.HasIndex( r => r.RoomTypeId );
-            
+
             builder.HasIndex( r => new
             {
                 r.RoomTypeId,

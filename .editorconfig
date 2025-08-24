@@ -22,7 +22,7 @@ insert_final_newline = false
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
-file_header_template =  # this. and Me. preferences
+file_header_template = # this. and Me. preferences
 
 
 
@@ -207,35 +207,35 @@ dotnet_naming_rule.частное_или_внутреннее_поле_should_be
 
 dotnet_naming_symbols.интерфейс.applicable_kinds = interface
 dotnet_naming_symbols.интерфейс.applicable_accessibilities = public, internal, private, protected, protected_internal
-dotnet_naming_symbols.интерфейс.required_modifiers = 
+dotnet_naming_symbols.интерфейс.required_modifiers =
 
 dotnet_naming_symbols.частное_или_внутреннее_поле.applicable_kinds = field
 dotnet_naming_symbols.частное_или_внутреннее_поле.applicable_accessibilities = internal, private
-dotnet_naming_symbols.частное_или_внутреннее_поле.required_modifiers = 
+dotnet_naming_symbols.частное_или_внутреннее_поле.required_modifiers =
 
 dotnet_naming_symbols.типы.applicable_kinds = class, struct, interface, enum
 dotnet_naming_symbols.типы.applicable_accessibilities = public, internal, private, protected, protected_internal
-dotnet_naming_symbols.типы.required_modifiers = 
+dotnet_naming_symbols.типы.required_modifiers =
 
 dotnet_naming_symbols.не_являющиеся_полем_члены.applicable_kinds = property, event, method
 dotnet_naming_symbols.не_являющиеся_полем_члены.applicable_accessibilities = public, internal, private, protected, protected_internal
-dotnet_naming_symbols.не_являющиеся_полем_члены.required_modifiers = 
+dotnet_naming_symbols.не_являющиеся_полем_члены.required_modifiers =
 
 # Naming styles
 
-dotnet_naming_style.всечастиспрописнойбуквы.required_prefix = 
-dotnet_naming_style.всечастиспрописнойбуквы.required_suffix = 
-dotnet_naming_style.всечастиспрописнойбуквы.word_separator = 
+dotnet_naming_style.всечастиспрописнойбуквы.required_prefix =
+dotnet_naming_style.всечастиспрописнойбуквы.required_suffix =
+dotnet_naming_style.всечастиспрописнойбуквы.word_separator =
 dotnet_naming_style.всечастиспрописнойбуквы.capitalization = pascal_case
 
 dotnet_naming_style.начинается_с_i.required_prefix = I
-dotnet_naming_style.начинается_с_i.required_suffix = 
-dotnet_naming_style.начинается_с_i.word_separator = 
+dotnet_naming_style.начинается_с_i.required_suffix =
+dotnet_naming_style.начинается_с_i.word_separator =
 dotnet_naming_style.начинается_с_i.capitalization = pascal_case
 
 dotnet_naming_style.начинается_с__.required_prefix = _
-dotnet_naming_style.начинается_с__.required_suffix = 
-dotnet_naming_style.начинается_с__.word_separator = 
+dotnet_naming_style.начинается_с__.required_suffix =
+dotnet_naming_style.начинается_с__.word_separator =
 dotnet_naming_style.начинается_с__.capitalization = camel_case
 
 # ReSharper properties

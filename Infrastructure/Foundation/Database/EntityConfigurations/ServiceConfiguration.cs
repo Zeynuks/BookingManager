@@ -18,8 +18,8 @@ namespace Infrastructure.Foundation.Database.EntityConfigurations
             builder.HasIndex( p => p.Name )
                 .IsUnique();
 
-            builder.HasMany(s => s.RoomTypes)
-                .WithMany(r => r.Services);
+            builder.HasMany( s => s.RoomTypes )
+                .WithMany( r => r.Services );
         }
     }
 }

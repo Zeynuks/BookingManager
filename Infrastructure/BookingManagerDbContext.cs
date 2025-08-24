@@ -13,7 +13,7 @@ namespace Infrastructure
         public DbSet<Amenity> Amenities { get; set; }
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
-        
+
         public BookingManagerDbContext( DbContextOptions<BookingManagerDbContext> options )
             : base( options )
         {

@@ -15,11 +15,11 @@ namespace Domain.Entities
         public bool IsSharedOccupancy { get; private set; }
         public int MaxPlaces { get; private set; }
 
-        public virtual  Property Property { get; private set; }
+        public virtual Property Property { get; private set; }
 
-        public virtual  IReadOnlyCollection<Room> Rooms => _rooms;
-        public virtual  IReadOnlyCollection<Service> Services => _services;
-        public virtual  IReadOnlyCollection<Amenity> Amenities => _amenities;
+        public virtual IReadOnlyCollection<Room> Rooms => _rooms;
+        public virtual IReadOnlyCollection<Service> Services => _services;
+        public virtual IReadOnlyCollection<Amenity> Amenities => _amenities;
 
         protected RoomType() { }
 

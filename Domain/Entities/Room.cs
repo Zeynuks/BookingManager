@@ -9,9 +9,9 @@ namespace Domain.Entities
         public int RoomTypeId { get; private set; }
         public string Number { get; private set; }
 
-        public virtual  RoomType RoomType { get; private set; }
-        
-        public virtual  IReadOnlyCollection<Reservation> Reservations => _reservations;
+        public virtual RoomType RoomType { get; private set; }
+
+        public virtual IReadOnlyCollection<Reservation> Reservations => _reservations;
 
         public Room() { }
 

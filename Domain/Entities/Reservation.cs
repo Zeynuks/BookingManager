@@ -16,8 +16,8 @@ namespace Domain.Entities
         public decimal Total { get; private set; }
         public Currency Currency { get; private set; }
 
-        public virtual  Room Room { get; private set; }
-        public virtual  Guest Guest { get; private set; }
+        public virtual Room Room { get; private set; }
+        public virtual Guest Guest { get; private set; }
 
         public Reservation(
             int roomId,

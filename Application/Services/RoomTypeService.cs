@@ -48,7 +48,8 @@ namespace Application.Services
                 roomType.Amenities.Select( a => new AmenityReadDto( a.Id, a.Name ) ).ToList() );
         }
 
-        public async Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId, CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId,
+            CancellationToken cancellationToken )
         {
             Property? property = await _propertyRepository.TryGet( propertyId, cancellationToken );
             if ( property is null )
@@ -56,7 +57,8 @@ namespace Application.Services
                 throw new DomainNotFoundException( $"Property with ID {propertyId} could not be found." );
             }
 
-            IReadOnlyList<RoomType> roomTypes = await _roomTypeRepository.GetListByProperty( property.Id, cancellationToken );
+            IReadOnlyList<RoomType> roomTypes =
+                await _roomTypeRepository.GetListByProperty( property.Id, cancellationToken );
 
             return roomTypes
                 .Select( roomType => new RoomTypeReadDto(
@@ -87,7 +89,8 @@ namespace Application.Services
 
             if ( dto.ServiceIds is { Count: > 0 } )
             {
-                IReadOnlyList<Service> services = await _serviceRepository.GetListByIds( dto.ServiceIds, cancellationToken );
+                IReadOnlyList<Service> services =
+                    await _serviceRepository.GetListByIds( dto.ServiceIds, cancellationToken );
                 EnsureAllFound( dto.ServiceIds, services.Select( x => x.Id ).ToList(), "Service" );
                 foreach ( Service s in services )
                 {
@@ -97,7 +100,8 @@ namespace Application.Services
 
             if ( dto.AmenityIds is { Count: > 0 } )
             {
-                IReadOnlyList<Amenity> amenities = await _amenityRepository.GetListByIds( dto.AmenityIds, cancellationToken );
+                IReadOnlyList<Amenity> amenities =
+                    await _amenityRepository.GetListByIds( dto.AmenityIds, cancellationToken );
                 EnsureAllFound( dto.AmenityIds, amenities.Select( x => x.Id ).ToList(), "Amenity" );
                 foreach ( Amenity a in amenities )
                 {

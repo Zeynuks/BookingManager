@@ -10,7 +10,7 @@ namespace Domain.Entities
         public string Name { get; private set; }
         public string PhoneNumber { get; private set; }
 
-        public virtual  IReadOnlyCollection<Reservation> Reservations => _reservations;
+        public virtual IReadOnlyCollection<Reservation> Reservations => _reservations;
 
         public Guest( string name, string phoneNumber )
         {

@@ -7,7 +7,7 @@ namespace Domain.Entities
         public int Id { get; private init; }
         public string Name { get; private set; }
 
-        public virtual  ICollection<RoomType> RoomTypes { get; private set; } = new List<RoomType>();
+        public virtual ICollection<RoomType> RoomTypes { get; private set; } = new List<RoomType>();
 
         public Amenity( string name )
         {
