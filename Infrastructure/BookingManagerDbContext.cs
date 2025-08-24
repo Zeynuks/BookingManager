@@ -29,7 +29,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration( new ServiceConfiguration() );
             modelBuilder.ApplyConfiguration( new AmenityConfiguration() );
             modelBuilder.ApplyConfiguration( new GuestConfiguration() );
-            modelBuilder.ApplyConfiguration( new PropertyConfiguration() );
+            modelBuilder.ApplyConfiguration( new ReservationConfiguration() );
         }
     }
 }

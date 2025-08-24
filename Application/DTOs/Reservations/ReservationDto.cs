@@ -22,9 +22,11 @@ namespace Application.DTOs.Reservations
         public DateOnly DepartureDate { get; init; }
 
         [Required]
+        [DefaultValue( "08:30:00" )]
         public TimeOnly ArrivalTime { get; init; }
 
         [Required]
+        [DefaultValue( "08:30:00" )]
         public TimeOnly DepartureTime { get; init; }
 
         [Required]

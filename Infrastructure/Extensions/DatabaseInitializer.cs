@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Extensions
 {
@@ -23,9 +24,13 @@ namespace Infrastructure.Extensions
                 {
                     options.UseLazyLoadingProxies().UseSqlServer( resolved, sql =>
                     {
+                        sql.MigrationsAssembly( "Infrastructure.Migrations" );
                         sql.EnableRetryOnFailure( 5, TimeSpan.FromSeconds( 5 ), null );
                     } );
                 }
+                
+                options.EnableSensitiveDataLogging();
+                options.LogTo(Console.WriteLine, LogLevel.Information);
             } );
         }
 

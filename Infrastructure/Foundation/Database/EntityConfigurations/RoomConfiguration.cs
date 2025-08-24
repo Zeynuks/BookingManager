@@ -23,10 +23,15 @@ namespace Infrastructure.Foundation.Database.EntityConfigurations
                 r.Number
             } ).IsUnique();
 
-            builder.HasOne( r => r.RoomType )
-                .WithMany( rt => rt.Rooms )
-                .HasForeignKey( r => r.RoomTypeId )
+            builder.HasMany( r => r.Reservations )
+                .WithOne( x => x.Room )
+                .HasForeignKey( x => x.RoomId )
                 .OnDelete( DeleteBehavior.Cascade );
+
+            builder.Navigation( r => r.Reservations )
+                .UsePropertyAccessMode( PropertyAccessMode.Field );
+            builder.Metadata.FindNavigation( nameof( Room.Reservations ) )!
+                .SetField( "_reservations" );
         }
     }
 }

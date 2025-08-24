@@ -150,6 +150,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -158,7 +159,9 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Reservation");
+                    b.HasIndex("RoomId", "ArrivalDate", "DepartureDate");
+
+                    b.ToTable("Reservation", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Room", b =>

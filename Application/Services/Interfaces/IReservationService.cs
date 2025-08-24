@@ -5,7 +5,8 @@ namespace Application.Services.Interfaces
 {
     public interface IReservationService
     {
-        Task<PagedResultDto<ReservationReadDto>> GetByPage( ReservationSearchQueryDto query,
+        Task<PagedResultDto<ReservationReadDto>> GetByPage(
+            ReservationSearchQueryDto query,
             CancellationToken cancellationToken );
 
         Task<ReservationReadDto> GetById( int id, CancellationToken cancellationToken );

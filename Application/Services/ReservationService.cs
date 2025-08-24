@@ -115,7 +115,7 @@ namespace Application.Services
 
             if ( !isAvailable )
             {
-                throw new DomainNotFoundException( $"Room ..." );
+                throw new DomainNotFoundException( $"Room is not available" );
             }
 
             decimal total = CalculateTotal(
@@ -176,7 +176,7 @@ namespace Application.Services
 
             if ( !isAvailable )
             {
-                throw new DomainNotFoundException( $"Room ..." );
+                throw new DomainNotFoundException( $"Room is not available" );
             }
 
             decimal total = CalculateTotal(

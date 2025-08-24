@@ -50,7 +50,7 @@ namespace Infrastructure.Foundation.Database.EntityConfigurations
             } );
 
             builder.HasOne( r => r.Room )
-                .WithMany()
+                .WithMany( room => room.Reservations )
                 .HasForeignKey( r => r.RoomId )
                 .OnDelete( DeleteBehavior.Cascade );
 
