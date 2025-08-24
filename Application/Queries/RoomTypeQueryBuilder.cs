@@ -10,7 +10,7 @@ namespace Application.Queries
     {
         private readonly IRoomTypeRepository _roomTypeRepository;
 
-        private RoomTypeQueryBuilder( IRoomTypeRepository roomTypeRepository )
+        public RoomTypeQueryBuilder( IRoomTypeRepository roomTypeRepository )
         {
             _roomTypeRepository = roomTypeRepository;
         }

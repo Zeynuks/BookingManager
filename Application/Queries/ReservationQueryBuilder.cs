@@ -10,7 +10,7 @@ namespace Application.Queries
     {
         private readonly IReservationRepository _reservationRepository;
 
-        private ReservationQueryBuilder( IReservationRepository reservationRepository )
+        public ReservationQueryBuilder( IReservationRepository reservationRepository )
         {
             _reservationRepository = reservationRepository;
         }
