@@ -16,31 +16,26 @@ namespace BookingManager.Controllers.PropertiesApi
     {
         private readonly IRoomTypeService _roomTypeService;
         private readonly IRoomService _roomService;
-        private readonly IServiceService _serviceService;
-        private readonly IAmenityService _amenityService;
 
         public RoomTypeController(
             IRoomTypeService roomTypeService,
-            IRoomService roomService,
-            IServiceService serviceService,
-            IAmenityService amenityService )
+            IRoomService roomService )
         {
             _roomTypeService = roomTypeService;
             _roomService = roomService;
-            _serviceService = serviceService;
-            _amenityService = amenityService;
         }
 
         /// <summary>Получить тип комнаты по идентификатору.</summary>
         /// <param name="id">Идентификатор типа комнаты.</param>
-        /// <param name="ct">Токен отмены.</param>
+        /// <param name="cancellationToken">Токен отмены.</param>
+        /// <returns>Тип комнаты или код 404, если не найден.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "RoomTypes_GetById", Summary = "Получить тип комнаты по Id" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( RoomTypeDto ) )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> GetById( int id, CancellationToken ct )
+        public async Task<IActionResult> GetById( int id, CancellationToken cancellationToken )
         {
-            RoomTypeDto dto = await _roomTypeService.Get( id, ct );
+            RoomTypeDto dto = await _roomTypeService.GetById( id, cancellationToken );
 
             return Ok( dto );
         }
@@ -48,43 +43,49 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <summary>Обновить тип комнаты.</summary>
         /// <param name="id">Идентификатор типа комнаты.</param>
         /// <param name="dto">Новые данные.</param>
-        /// <param name="ct">Токен отмены.</param>
+        /// <param name="cancellationToken">Токен отмены.</param>
+        /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "RoomTypes_Update", Summary = "Обновить тип комнаты" )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
         [ProducesResponseType( StatusCodes.Status400BadRequest )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> Update( int id, [FromBody] RoomTypeUpdateDto dto, CancellationToken ct )
+        public async Task<IActionResult> Update(
+            int id,
+            [FromBody] RoomTypeUpdateDto dto,
+            CancellationToken cancellationToken )
         {
-            await _roomTypeService.Update( id, dto, ct );
+            await _roomTypeService.Update( id, dto, cancellationToken );
 
             return NoContent();
         }
 
         /// <summary>Удалить тип комнаты.</summary>
         /// <param name="id">Идентификатор типа комнаты.</param>
-        /// <param name="ct">Токен отмены.</param>
+        /// <param name="cancellationToken">Токен отмены.</param>
+        /// <returns>Код 204 без содержимого при успешном удалении; 404 если не найден.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "RoomTypes_Delete", Summary = "Удалить тип комнаты" )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> Delete( int id, CancellationToken ct )
+        public async Task<IActionResult> Delete( int id, CancellationToken cancellationToken )
         {
-            await _roomTypeService.Remove( id, ct );
+            await _roomTypeService.Remove( id, cancellationToken );
 
             return NoContent();
         }
 
         /// <summary>Получить комнаты заданного типа.</summary>
         /// <param name="id">Идентификатор типа комнаты.</param>
-        /// <param name="ct">Токен отмены.</param>
+        /// <param name="cancellationToken">Токен отмены.</param>
+        /// <returns>Список комнат указанного типа.</returns>
         [HttpGet( "{id:int}/rooms" )]
         [SwaggerOperation( OperationId = "RoomTypes_GetRooms", Summary = "Список комнат этого типа" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<RoomReadDto> ) )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> GetRooms( int id, CancellationToken ct )
+        public async Task<IActionResult> GetRooms( int id, CancellationToken cancellationToken )
         {
-            IReadOnlyList<RoomReadDto> getList = await _roomService.GetListByRoomTypeId( id, ct );
+            IReadOnlyList<RoomReadDto> getList = await _roomService.GetListByRoomTypeId( id, cancellationToken );
 
             return Ok( getList );
         }
@@ -92,16 +93,20 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <summary>Создать комнату для заданного типа.</summary>
         /// <param name="id">Идентификатор типа комнаты.</param>
         /// <param name="dto">Данные для создания комнаты.</param>
-        /// <param name="ct">Токен отмены.</param>
+        /// <param name="cancellationToken">Токен отмены.</param>
+        /// <returns>Созданная комната с кодом 201 и заголовком Location.</returns>
         [HttpPost( "{id:int}/rooms" )]
         [SwaggerOperation( OperationId = "RoomTypes_CreateRoom", Summary = "Создать комнату выбранного типа" )]
         [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( RoomReadDto ) )]
         [ProducesResponseType( StatusCodes.Status400BadRequest )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> CreateRoom( int id, [FromBody] RoomCreateDto dto, CancellationToken ct )
+        public async Task<IActionResult> CreateRoom(
+            int id,
+            [FromBody] RoomCreateDto dto,
+            CancellationToken cancellationToken )
         {
-            int roomId = await _roomService.Create( id, dto, ct );
-            RoomReadDto createdRoom = await _roomService.Get( roomId, ct );
+            int roomId = await _roomService.Create( id, dto, cancellationToken );
+            RoomReadDto createdRoom = await _roomService.GetById( roomId, cancellationToken );
 
             RouteValueDictionary routeValues = new()
             {
@@ -109,34 +114,6 @@ namespace BookingManager.Controllers.PropertiesApi
             };
 
             return CreatedAtAction( nameof( RoomController.GetById ), routeValues, createdRoom );
-        }
-
-        /// <summary>Получить сервисы, связанные с типом комнаты.</summary>
-        /// <param name="id">Идентификатор типа комнаты.</param>
-        /// <param name="ct">Токен отмены.</param>
-        [HttpGet( "{id:int}/services" )]
-        [SwaggerOperation( OperationId = "RoomTypes_GetServices", Summary = "Список сервисов для типа комнаты" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<ServiceReadDto> ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> GetServices( int id, CancellationToken ct )
-        {
-            IReadOnlyList<ServiceReadDto> getList = await _serviceService.GetListByRoomType( id, ct );
-
-            return Ok( getList );
-        }
-
-        /// <summary>Получить удобства, связанные с типом комнаты.</summary>
-        /// <param name="id">Идентификатор типа комнаты.</param>
-        /// <param name="ct">Токен отмены.</param>
-        [HttpGet( "{id:int}/amenities" )]
-        [SwaggerOperation( OperationId = "RoomTypes_GetAmenities", Summary = "Список удобств типа комнаты" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<AmenityReadDto> ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> GetAmenities( int id, CancellationToken ct )
-        {
-            IReadOnlyList<AmenityReadDto> getList = await _amenityService.GetListByRoomType( id, ct );
-
-            return Ok( getList );
         }
     }
 }

@@ -4,10 +4,10 @@ namespace Application.Services.Interfaces
 {
     public interface IRoomTypeService
     {
-        Task<RoomTypeReadDto> Get( int id, CancellationToken ct );
-        Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId, CancellationToken ct );
-        Task<int> Create( int propertyId, RoomTypeCreateDto dto, CancellationToken ct );
-        Task Update( int id, RoomTypeUpdateDto dto, CancellationToken ct );
-        Task Remove( int id, CancellationToken ct );
+        Task<RoomTypeReadDto> GetById( int id, CancellationToken cancellationToken );
+        Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId, CancellationToken cancellationToken );
+        Task<int> Create( int propertyId, RoomTypeCreateDto dto, CancellationToken cancellationToken );
+        Task Update( int id, RoomTypeUpdateDto dto, CancellationToken cancellationToken );
+        Task Remove( int id, CancellationToken cancellationToken );
     }
 }

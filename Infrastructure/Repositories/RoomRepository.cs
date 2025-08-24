@@ -13,17 +13,20 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Room?> Get( int id, CancellationToken ct )
+        public async Task<Room?> TryGet( int id, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Room>().FirstOrDefaultAsync( x => x.Id == id, ct );
+            return await _dbContext.Rooms
+                .Include( r => r.RoomType )
+                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
         }
 
-        public async Task<List<Room>> GetListByRoomType( int roomTypeId, CancellationToken ct )
+        public async Task<IReadOnlyList<Room>> GetListByRoomType( int roomTypeId, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Room>()
+            return await _dbContext.Rooms
                 .Where( x => x.RoomTypeId == roomTypeId )
                 .OrderBy( x => x.Number )
-                .ToListAsync( ct );
+                .AsNoTracking()
+                .ToListAsync( cancellationToken );
         }
 
         public void Add( Room room )
@@ -33,12 +36,52 @@ namespace Infrastructure.Repositories
 
         public void Delete( Room room )
         {
-            _dbContext.Set<Room>().Remove( room );
+            _dbContext.Rooms.Remove( room );
         }
-        
+
         public IQueryable<Room> Query()
         {
-            return _dbContext.Set<Room>();
+            return _dbContext.Rooms;
+        }
+
+        public async Task<bool> IsAvailable(
+            int roomId,
+            DateOnly arrivalDate,
+            TimeOnly arrivalTime,
+            DateOnly departureDate,
+            TimeOnly departureTime,
+            int guestsCount,
+            CancellationToken cancellationToken )
+        {
+            Room room = await _dbContext.Rooms
+                .AsNoTracking()
+                .Include( r => r.RoomType )
+                .SingleAsync( r => r.Id == roomId, cancellationToken );
+
+            IQueryable<Reservation> overlapQuery = _dbContext.Reservations
+                .Where( x => x.RoomId == roomId )
+                .Where( x =>
+                    ( x.ArrivalDate < departureDate ||
+                      ( x.ArrivalDate == departureDate && x.ArrivalTime < departureTime ) )
+                    &&
+                    ( arrivalDate < x.DepartureDate ||
+                      ( arrivalDate == x.DepartureDate && arrivalTime < x.DepartureTime ) )
+                );
+
+            if ( !room.RoomType.IsSharedOccupancy )
+            {
+                bool hasOverlap = await overlapQuery.AnyAsync( cancellationToken );
+
+                return !hasOverlap;
+            }
+
+            int? occupiedNullable = await overlapQuery
+                .Select( x => x.GuestsCount )
+                .SumAsync( cancellationToken );
+
+            int occupied = occupiedNullable ?? 0;
+
+            return occupied + guestsCount <= room.RoomType.MaxPlaces;
         }
     }
 }

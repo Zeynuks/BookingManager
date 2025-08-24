@@ -13,14 +13,17 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Property?> Get( int id, CancellationToken ct )
+        public async Task<Property?> TryGet( int id, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Property>().FirstOrDefaultAsync( x => x.Id == id, ct );
+            return await _dbContext.Properties
+                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
         }
 
-        public async Task<List<Property>> GetList( CancellationToken ct )
+        public async Task<IReadOnlyList<Property>> GetList( CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Property>().ToListAsync( ct );
+            return await _dbContext.Properties
+                .AsNoTracking()
+                .ToListAsync( cancellationToken );
         }
 
         public void Add( Property property )
@@ -30,7 +33,7 @@ namespace Infrastructure.Repositories
 
         public void Delete( Property property )
         {
-            _dbContext.Set<Property>().Remove( property );
+            _dbContext.Properties.Remove( property );
         }
     }
 }

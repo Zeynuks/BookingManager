@@ -2,13 +2,23 @@ using Application.DTOs.Reservations;
 using Application.Queries.Interfaces;
 using Application.Queries.Specs;
 using Domain.Entities;
+using Domain.Repositories;
 
 namespace Application.Queries
 {
     public class ReservationQueryBuilder : IReservationQueryBuilder
     {
-        public IQueryable<Reservation> Build( IQueryable<Reservation> source, ReservationSearchQueryDto query )
+        private readonly IReservationRepository _reservationRepository;
+
+        private ReservationQueryBuilder( IReservationRepository reservationRepository )
         {
+            _reservationRepository = reservationRepository;
+        }
+
+        public IQueryable<Reservation> Build( ReservationSearchQueryDto query )
+        {
+            IQueryable<Reservation> source = _reservationRepository.Query();
+
             if ( query.GuestId.HasValue )
             {
                 source = source.Where( ReservationSpecs.ByGuest( query.GuestId.Value ) );

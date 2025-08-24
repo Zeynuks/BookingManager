@@ -1,5 +1,6 @@
 using BookingManager.Extensions;
 using BookingManager.Middlewares;
+using Infrastructure.Extensions;
 using Microsoft.OpenApi.Models;
 
 namespace BookingManager

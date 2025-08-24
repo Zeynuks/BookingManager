@@ -4,11 +4,10 @@ namespace Application.Services.Interfaces
 {
     public interface IAmenityService
     {
-        Task<AmenityReadDto> Get( int id, CancellationToken ct );
-        Task<IReadOnlyList<AmenityReadDto>> GetList( CancellationToken ct );
-        Task<IReadOnlyList<AmenityReadDto>> GetListByRoomType( int roomTypeId, CancellationToken ct );
-        Task<int> Create( AmenityCreateDto dto, CancellationToken ct );
-        Task Update( int id, AmenityUpdateDto dto, CancellationToken ct );
-        Task Remove( int id, CancellationToken ct );
+        Task<AmenityReadDto> GetById( int id, CancellationToken cancellationToken );
+        Task<IReadOnlyList<AmenityReadDto>> GetList( CancellationToken cancellationToken );
+        Task<int> Create( AmenityCreateDto dto, CancellationToken cancellationToken );
+        Task Update( int id, AmenityUpdateDto dto, CancellationToken cancellationToken );
+        Task Remove( int id, CancellationToken cancellationToken );
     }
 }

@@ -4,8 +4,8 @@ namespace Domain.Repositories
 {
     public interface IPropertyRepository
     {
-        Task<Property?> Get( int id, CancellationToken ct );
-        Task<List<Property>> GetList( CancellationToken ct );
+        Task<Property?> TryGet( int id, CancellationToken cancellationToken );
+        Task<IReadOnlyList<Property>> GetList( CancellationToken cancellationToken );
         void Add( Property property );
         void Delete( Property property );
     }

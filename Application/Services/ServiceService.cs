@@ -18,9 +18,9 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ServiceReadDto> Get( int id, CancellationToken ct )
+        public async Task<ServiceReadDto> GetById( int id, CancellationToken cancellationToken )
         {
-            Service? service = await _serviceRepository.Get( id, ct );
+            Service? service = await _serviceRepository.TryGet( id, cancellationToken );
             if ( service is null )
             {
                 throw new DomainNotFoundException( $"Service with ID {id} could not be found." );
@@ -29,52 +29,45 @@ namespace Application.Services
             return new ServiceReadDto( service.Id, service.Name );
         }
 
-        public async Task<IReadOnlyList<ServiceReadDto>> GetList( CancellationToken ct )
+        public async Task<IReadOnlyList<ServiceReadDto>> GetList( CancellationToken cancellationToken )
         {
-            List<Service> services = await _serviceRepository.GetList( ct );
+            IReadOnlyList<Service> services = await _serviceRepository.GetList( cancellationToken );
 
             return services.Select( service => new ServiceReadDto( service.Id, service.Name ) ).ToList();
         }
 
-        public async Task<IReadOnlyList<ServiceReadDto>> GetListByRoomType( int roomTypeId, CancellationToken ct )
-        {
-            List<Service> services = await _serviceRepository.GetListByRoomType( roomTypeId, ct );
-
-            return services.Select( service => new ServiceReadDto( service.Id, service.Name ) ).ToList();
-        }
-
-        public async Task<int> Create( ServiceCreateDto dto, CancellationToken ct )
+        public async Task<int> Create( ServiceCreateDto dto, CancellationToken cancellationToken )
         {
             Service service = new( dto.Name );
 
             _serviceRepository.Add( service );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
 
             return service.Id;
         }
 
-        public async Task Update( int id, ServiceUpdateDto dto, CancellationToken ct )
+        public async Task Update( int id, ServiceUpdateDto dto, CancellationToken cancellationToken )
         {
-            Service? service = await _serviceRepository.Get( id, ct );
+            Service? service = await _serviceRepository.TryGet( id, cancellationToken );
             if ( service is null )
             {
                 throw new DomainNotFoundException( $"Service with ID {id} could not be found." );
             }
 
             service.Update( dto.Name );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
         }
 
-        public async Task Remove( int id, CancellationToken ct )
+        public async Task Remove( int id, CancellationToken cancellationToken )
         {
-            Service? service = await _serviceRepository.Get( id, ct );
+            Service? service = await _serviceRepository.TryGet( id, cancellationToken );
             if ( service is null )
             {
                 throw new DomainNotFoundException( $"Service with ID {id} could not be found." );
             }
 
             _serviceRepository.Delete( service );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
         }
     }
 }

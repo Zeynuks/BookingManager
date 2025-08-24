@@ -13,14 +13,10 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Reservation?> Get( int id, CancellationToken ct )
+        public async Task<Reservation?> TryGet( int id, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Reservation>().FirstOrDefaultAsync( x => x.Id == id, ct );
-        }
-
-        public async Task<List<Reservation>> GetList( CancellationToken ct )
-        {
-            return await _dbContext.Set<Reservation>().ToListAsync( ct );
+            return await _dbContext.Reservations
+                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
         }
 
         public void Add( Reservation reservation )
@@ -30,12 +26,32 @@ namespace Infrastructure.Repositories
 
         public void Delete( Reservation reservation )
         {
-            _dbContext.Set<Reservation>().Remove( reservation );
+            _dbContext.Reservations.Remove( reservation );
         }
-        
+
         public IQueryable<Reservation> Query()
         {
-            return _dbContext.Set<Reservation>();
+            return _dbContext.Reservations;
+        }
+
+        public Task<int> Count(
+            IQueryable<Reservation> query,
+            CancellationToken cancellationToken )
+        {
+            return query.CountAsync( cancellationToken );
+        }
+
+        public async Task<IReadOnlyList<Reservation>> GetPage(
+            IQueryable<Reservation> query,
+            int page,
+            int size,
+            CancellationToken cancellationToken )
+        {
+            return await query
+                .AsNoTracking()
+                .Skip( ( page - 1 ) * size )
+                .Take( size )
+                .ToListAsync( cancellationToken );
         }
     }
 }

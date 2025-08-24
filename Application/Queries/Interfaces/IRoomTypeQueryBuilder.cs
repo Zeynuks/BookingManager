@@ -5,6 +5,6 @@ namespace Application.Queries.Interfaces
 {
     public interface IRoomTypeQueryBuilder
     {
-        IQueryable<RoomType> Build( IQueryable<RoomType> roomTypes, RoomTypeSearchQueryDto query );
+        IQueryable<RoomType> Build( RoomTypeSearchQueryDto query );
     }
 }

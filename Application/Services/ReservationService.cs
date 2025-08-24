@@ -7,7 +7,6 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Repositories;
 using Infrastructure.Foundation;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
@@ -30,20 +29,23 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PagedResultDto<ReservationReadDto>> GetList(
+        public async Task<PagedResultDto<ReservationReadDto>> GetByPage(
             ReservationSearchQueryDto query,
-            CancellationToken ct )
+            CancellationToken cancellationToken )
         {
-            IQueryable<Reservation> queryData = _reservationQueryBuilder
-                .Build( _reservationRepository.Query().AsNoTracking(), query );
+            IQueryable<Reservation> queryData = _reservationQueryBuilder.Build( query );
 
-            int total = await queryData.CountAsync( ct );
+            int total = await _reservationRepository.Count( queryData, cancellationToken );
             int page = Math.Max( 1, query.Page );
             int size = Math.Clamp( query.Size, 1, 200 );
 
-            List<ReservationReadDto> reservations = await queryData
-                .Skip( ( int )( ( ( long )page - 1 ) * size ) )
-                .Take( size )
+            IReadOnlyList<Reservation> entities = await _reservationRepository.GetPage(
+                queryData,
+                page,
+                size,
+                cancellationToken );
+
+            IReadOnlyList<ReservationReadDto> items = entities
                 .Select( r => new ReservationReadDto(
                     r.Id,
                     r.RoomId,
@@ -56,20 +58,20 @@ namespace Application.Services
                     r.Total,
                     r.Currency.ToString()
                 ) )
-                .ToListAsync( ct );
+                .ToList();
 
             return new PagedResultDto<ReservationReadDto>
             {
-                Items = reservations,
+                Items = items,
                 Total = total,
                 Page = page,
                 Size = size
             };
         }
 
-        public async Task<ReservationReadDto> Get( int id, CancellationToken ct )
+        public async Task<ReservationReadDto> GetById( int id, CancellationToken cancellationToken )
         {
-            Reservation? r = await _reservationRepository.Get( id, ct );
+            Reservation? r = await _reservationRepository.TryGet( id, cancellationToken );
             if ( r is null )
             {
                 throw new DomainNotFoundException( $"Reservation with ID {id} could not be found." );
@@ -88,31 +90,33 @@ namespace Application.Services
                 r.Currency.ToString() );
         }
 
-        public async Task<int> Create( ReservationCreateDto dto, CancellationToken ct )
+        public async Task<int> Create( ReservationCreateDto dto, CancellationToken cancellationToken )
         {
             if ( !Enum.TryParse( dto.Currency, true, out Currency currency ) )
             {
                 throw new BusinessRuleViolationException( $"Invalid currency value: {dto.Currency}" );
             }
 
-            Room? room = await _roomRepository.Query()
-                .Include( r => r.RoomType )
-                .FirstOrDefaultAsync( r => r.Id == dto.RoomId, ct );
+            Room? room = await _roomRepository.TryGet( dto.RoomId, cancellationToken );
 
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {dto.RoomId} could not be found." );
             }
 
-            await EnsureCapacityOrThrow(
+            bool isAvailable = await _roomRepository.IsAvailable(
                 room.Id,
-                dto.GuestsCount,
                 dto.ArrivalDate,
                 dto.ArrivalTime,
                 dto.DepartureDate,
                 dto.DepartureTime,
-                excludeReservationId: null,
-                ct );
+                dto.GuestsCount,
+                cancellationToken );
+
+            if ( !isAvailable )
+            {
+                throw new DomainNotFoundException( $"Room ..." );
+            }
 
             decimal total = CalculateTotal(
                 room.RoomType,
@@ -135,19 +139,16 @@ namespace Application.Services
             );
 
             _reservationRepository.Add( reservation );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
 
             return reservation.Id;
         }
 
-        public async Task Update( int id, ReservationUpdateDto dto, CancellationToken ct )
+        public async Task Update( int id, ReservationUpdateDto dto, CancellationToken cancellationToken )
         {
-            Reservation? current = await _reservationRepository.Query()
-                .Include( r => r.Room )
-                .ThenInclude( rm => rm.RoomType )
-                .FirstOrDefaultAsync( r => r.Id == id, ct );
+            Reservation? reservation = await _reservationRepository.TryGet( id, cancellationToken );
 
-            if ( current is null )
+            if ( reservation is null )
             {
                 throw new DomainNotFoundException( $"Reservation with ID {id} could not be found." );
             }
@@ -157,24 +158,26 @@ namespace Application.Services
                 throw new BusinessRuleViolationException( $"Invalid currency value: {dto.Currency}" );
             }
 
-            Room? room = await _roomRepository.Query()
-                .Include( r => r.RoomType )
-                .FirstOrDefaultAsync( r => r.Id == dto.RoomId, ct );
+            Room? room = await _roomRepository.TryGet( dto.RoomId, cancellationToken );
 
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {dto.RoomId} could not be found." );
             }
 
-            await EnsureCapacityOrThrow(
+            bool isAvailable = await _roomRepository.IsAvailable(
                 room.Id,
-                dto.GuestsCount,
                 dto.ArrivalDate,
                 dto.ArrivalTime,
                 dto.DepartureDate,
                 dto.DepartureTime,
-                excludeReservationId: id,
-                ct );
+                dto.GuestsCount,
+                cancellationToken );
+
+            if ( !isAvailable )
+            {
+                throw new DomainNotFoundException( $"Room ..." );
+            }
 
             decimal total = CalculateTotal(
                 room.RoomType,
@@ -184,7 +187,7 @@ namespace Application.Services
                 dto.DepartureTime,
                 dto.GuestsCount );
 
-            current.Update(
+            reservation.Update(
                 dto.GuestsCount,
                 dto.ArrivalDate,
                 dto.DepartureDate,
@@ -194,85 +197,20 @@ namespace Application.Services
                 currency
             );
 
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
         }
 
-        public async Task Remove( int id, CancellationToken ct )
+        public async Task Remove( int id, CancellationToken cancellationToken )
         {
-            Reservation? reservation = await _reservationRepository.Get( id, ct );
+            Reservation? reservation = await _reservationRepository.TryGet( id, cancellationToken );
             if ( reservation is null )
             {
                 throw new DomainNotFoundException( $"Reservation with ID {id} could not be found." );
             }
 
             _reservationRepository.Delete( reservation );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
         }
-
-        private async Task EnsureCapacityOrThrow(
-            int roomId,
-            int guestsCount,
-            DateOnly arrivalDate,
-            TimeOnly arrivalTime,
-            DateOnly departureDate,
-            TimeOnly departureTime,
-            int? excludeReservationId,
-            CancellationToken ct )
-        {
-            EnsureChronologyOrThrow( arrivalDate, arrivalTime, departureDate, departureTime );
-
-            Room room = await _roomRepository.Query()
-                .Include( r => r.RoomType )
-                .Include( r => r.Reservations )
-                .FirstAsync( r => r.Id == roomId, ct );
-
-            RoomType rt = room.RoomType;
-
-            DateTime start = arrivalDate.ToDateTime( arrivalTime );
-            DateTime end = departureDate.ToDateTime( departureTime );
-
-            IEnumerable<Reservation> overlaps = room.Reservations
-                .Where( r => excludeReservationId is null || r.Id != excludeReservationId.Value )
-                .Where( r =>
-                {
-                    DateTime oStart = r.ArrivalDate.ToDateTime( r.ArrivalTime );
-                    DateTime oEnd = r.DepartureDate.ToDateTime( r.DepartureTime );
-                    return Overlaps( start, end, oStart, oEnd );
-                } );
-
-            if ( rt.IsSharedOccupancy )
-            {
-                int occupied = overlaps.Sum( r => r.GuestsCount );
-                int available = rt.MaxPlaces - occupied;
-
-                if ( guestsCount > available )
-                {
-                    throw new BusinessRuleViolationException(
-                        $"Not enough places in shared room. Available: {available}, requested: {guestsCount}." );
-                }
-            }
-            else
-            {
-                if ( overlaps.Any() )
-                {
-                    throw new BusinessRuleViolationException( "Room is already reserved for selected period." );
-                }
-
-                if ( guestsCount > rt.MaxPlaces )
-                {
-                    throw new BusinessRuleViolationException(
-                        $"Guests count exceeds room capacity {rt.MaxPlaces}." );
-                }
-            }
-
-            return;
-
-            static bool Overlaps( DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd )
-            {
-                return aStart < bEnd && bStart < aEnd;
-            }
-        }
-
 
         private static decimal CalculateTotal(
             RoomType roomType,
@@ -282,7 +220,7 @@ namespace Application.Services
             TimeOnly departureTime,
             int guestsCount )
         {
-            EnsureChronologyOrThrow( arrivalDate, arrivalTime, departureDate, departureTime );
+            ValidateDate( arrivalDate, arrivalTime, departureDate, departureTime );
 
             int days = arrivalDate == departureDate ? 1 : departureDate.DayNumber - arrivalDate.DayNumber;
 
@@ -296,7 +234,7 @@ namespace Application.Services
             return baseTotal;
         }
 
-        private static void EnsureChronologyOrThrow(
+        private static void ValidateDate(
             DateOnly arrivalDate,
             TimeOnly arrivalTime,
             DateOnly departureDate,

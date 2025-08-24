@@ -13,14 +13,17 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Guest?> Get( int id, CancellationToken ct )
+        public async Task<Guest?> TryGet( int id, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Guest>().FirstOrDefaultAsync( x => x.Id == id, ct );
+            return await _dbContext.Guests
+                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
         }
 
-        public async Task<List<Guest>> GetList( CancellationToken ct )
+        public async Task<IReadOnlyList<Guest>> GetList( CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Guest>().ToListAsync( ct );
+            return await _dbContext.Guests
+                .AsNoTracking()
+                .ToListAsync( cancellationToken );
         }
 
         public void Add( Guest guest )
@@ -30,7 +33,7 @@ namespace Infrastructure.Repositories
 
         public void Delete( Guest guest )
         {
-            _dbContext.Set<Guest>().Remove( guest );
+            _dbContext.Guests.Remove( guest );
         }
     }
 }

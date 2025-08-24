@@ -24,12 +24,15 @@ namespace BookingManager.Controllers.ReservationsApi
 
         /// <summary>Поиск типов комнат.</summary>
         /// <remarks>Фильтры: город, даты, гости, цена, удобства/сервисы.</remarks>
+        /// <returns>Страница результатов с типами комнат.</returns>
         [HttpGet]
         [SwaggerOperation( OperationId = "Search_GetRoomTypes", Summary = "Поиск типов комнат" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( PagedResultDto<RoomTypeReadDto> ) )]
-        public async Task<IActionResult> Get( [FromQuery] RoomTypeSearchQueryDto query, CancellationToken ct )
+        public async Task<IActionResult> Search(
+            [FromQuery] RoomTypeSearchQueryDto query,
+            CancellationToken cancellationToken )
         {
-            PagedResultDto<RoomTypeReadDto> result = await _roomTypeSearchService.GetList( query, ct );
+            PagedResultDto<RoomTypeReadDto> result = await _roomTypeSearchService.GetByPage( query, cancellationToken );
 
             return Ok( result );
         }

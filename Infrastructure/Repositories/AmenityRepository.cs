@@ -13,34 +13,25 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Amenity?> Get( int id, CancellationToken ct )
+        public async Task<Amenity?> TryGet( int id, CancellationToken cancellationToken )
+        {
+            return await _dbContext.Amenities
+                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+        }
+
+        public async Task<IReadOnlyList<Amenity>> GetList( CancellationToken cancellationToken )
         {
             return await _dbContext.Amenities
                 .AsNoTracking()
-                .FirstOrDefaultAsync( x => x.Id == id, ct );
+                .ToListAsync( cancellationToken );
         }
 
-        public async Task<List<Amenity>> GetList( CancellationToken ct )
-        {
-            return await _dbContext.Amenities
-                .AsNoTracking()
-                .ToListAsync( ct );
-        }
-
-        public async Task<List<Amenity>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken ct )
+        public async Task<IReadOnlyList<Amenity>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken cancellationToken )
         {
             return await _dbContext.Amenities
                 .AsNoTracking()
                 .Where( a => ids.Contains( a.Id ) )
-                .ToListAsync( ct );
-        }
-
-        public async Task<List<Amenity>> GetListByRoomType( int roomTypeId, CancellationToken ct )
-        {
-            return await _dbContext.Amenities
-                .AsNoTracking()
-                .Where( a => a.RoomTypes.Any( t => t.Id == roomTypeId ) )
-                .ToListAsync( ct );
+                .ToListAsync( cancellationToken );
         }
 
         public void Add( Amenity amenity )

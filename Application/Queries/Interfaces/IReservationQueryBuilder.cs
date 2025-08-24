@@ -5,6 +5,6 @@ namespace Application.Queries.Interfaces
 {
     public interface IReservationQueryBuilder
     {
-        IQueryable<Reservation> Build( IQueryable<Reservation> source, ReservationSearchQueryDto query );
+        IQueryable<Reservation> Build( ReservationSearchQueryDto query );
     }
 }

@@ -19,9 +19,9 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PropertyReadDto> Get( int id, CancellationToken ct )
+        public async Task<PropertyReadDto> GetById( int id, CancellationToken cancellationToken )
         {
-            Property? property = await _propertyRepository.Get( id, ct );
+            Property? property = await _propertyRepository.TryGet( id, cancellationToken );
             if ( property is null )
             {
                 throw new DomainNotFoundException( $"Property with ID {id} could not be found." );
@@ -38,9 +38,9 @@ namespace Application.Services
                 property.Currency.ToString() );
         }
 
-        public async Task<IReadOnlyList<PropertyReadDto>> GetList( CancellationToken ct )
+        public async Task<IReadOnlyList<PropertyReadDto>> GetList( CancellationToken cancellationToken )
         {
-            List<Property> properties = await _propertyRepository.GetList( ct );
+            IReadOnlyList<Property> properties = await _propertyRepository.GetList( cancellationToken );
 
             return properties
                 .Select( property => new PropertyReadDto(
@@ -55,7 +55,7 @@ namespace Application.Services
                 .ToList();
         }
 
-        public async Task<int> Create( PropertyCreateDto dto, CancellationToken ct )
+        public async Task<int> Create( PropertyCreateDto dto, CancellationToken cancellationToken )
         {
             if ( !Enum.TryParse( dto.Currency, true, out Currency currency ) )
             {
@@ -77,9 +77,9 @@ namespace Application.Services
             return property.Id;
         }
 
-        public async Task Update( int id, PropertyUpdateDto dto, CancellationToken ct )
+        public async Task Update( int id, PropertyUpdateDto dto, CancellationToken cancellationToken )
         {
-            Property? property = await _propertyRepository.Get( id, ct );
+            Property? property = await _propertyRepository.TryGet( id, cancellationToken );
             if ( property is null )
             {
                 throw new DomainNotFoundException( $"Property with ID {id} could not be found." );
@@ -102,9 +102,9 @@ namespace Application.Services
             await _unitOfWork.CommitAsync( CancellationToken.None );
         }
 
-        public async Task Remove( int id, CancellationToken ct )
+        public async Task Remove( int id, CancellationToken cancellationToken )
         {
-            Property? property = await _propertyRepository.Get( id, ct );
+            Property? property = await _propertyRepository.TryGet( id, cancellationToken );
             if ( property is null )
             {
                 throw new DomainNotFoundException( $"Property with ID {id} could not be found." );

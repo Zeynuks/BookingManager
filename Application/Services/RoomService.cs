@@ -23,9 +23,9 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RoomReadDto> Get( int id, CancellationToken ct )
+        public async Task<RoomReadDto> GetById( int id, CancellationToken cancellationToken )
         {
-            Room? room = await _roomRepository.Get( id, ct );
+            Room? room = await _roomRepository.TryGet( id, cancellationToken );
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {id} could not be found." );
@@ -37,15 +37,16 @@ namespace Application.Services
                 room.Number );
         }
 
-        public async Task<IReadOnlyList<RoomReadDto>> GetListByRoomTypeId( int roomTypeId, CancellationToken ct )
+        public async Task<IReadOnlyList<RoomReadDto>> GetListByRoomTypeId( int roomTypeId,
+            CancellationToken cancellationToken )
         {
-            RoomType? roomType = await _roomTypesRepository.Get( roomTypeId, ct );
+            RoomType? roomType = await _roomTypesRepository.TryGet( roomTypeId, cancellationToken );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {roomTypeId} could not be found." );
             }
 
-            List<Room> rooms = await _roomRepository.GetListByRoomType( roomTypeId, ct );
+            IReadOnlyList<Room> rooms = await _roomRepository.GetListByRoomType( roomTypeId, cancellationToken );
 
             return rooms
                 .Select( r => new RoomReadDto(
@@ -55,9 +56,9 @@ namespace Application.Services
                 .ToList();
         }
 
-        public async Task<int> Create( int roomTypeId, RoomCreateDto dto, CancellationToken ct )
+        public async Task<int> Create( int roomTypeId, RoomCreateDto dto, CancellationToken cancellationToken )
         {
-            RoomType? roomType = await _roomTypesRepository.Get( roomTypeId, ct );
+            RoomType? roomType = await _roomTypesRepository.TryGet( roomTypeId, cancellationToken );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {roomTypeId} could not be found." );
@@ -67,39 +68,40 @@ namespace Application.Services
                 roomTypeId,
                 dto.Number );
 
-            await _unitOfWork.CommitAsync( ct );
+            _roomRepository.Add( room );
+            await _unitOfWork.CommitAsync( cancellationToken );
 
             return room.Id;
         }
 
-        public async Task Update( int id, RoomUpdateDto dto, CancellationToken ct )
+        public async Task Update( int id, RoomUpdateDto dto, CancellationToken cancellationToken )
         {
-            Room? room = await _roomRepository.Get( id, ct );
+            Room? room = await _roomRepository.TryGet( id, cancellationToken );
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {id} could not be found." );
             }
 
-            RoomType? roomType = await _roomTypesRepository.Get( room.RoomTypeId, ct );
+            RoomType? roomType = await _roomTypesRepository.TryGet( room.RoomTypeId, cancellationToken );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {room.RoomTypeId} could not be found." );
             }
 
             room.Update( dto.RoomTypeId, dto.Number );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
         }
 
-        public async Task Remove( int id, CancellationToken ct )
+        public async Task Remove( int id, CancellationToken cancellationToken )
         {
-            Room? room = await _roomRepository.Get( id, ct );
+            Room? room = await _roomRepository.TryGet( id, cancellationToken );
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {id} could not be found." );
             }
 
             _roomRepository.Delete( room );
-            await _unitOfWork.CommitAsync( ct );
+            await _unitOfWork.CommitAsync( cancellationToken );
         }
     }
 }

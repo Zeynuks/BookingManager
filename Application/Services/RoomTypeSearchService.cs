@@ -4,7 +4,6 @@ using Application.Queries.Interfaces;
 using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
@@ -21,21 +20,23 @@ namespace Application.Services
             _roomTypeQueryBuilder = roomTypeQueryBuilder;
         }
 
-        public async Task<PagedResultDto<RoomTypeReadDto>> GetList(
+        public async Task<PagedResultDto<RoomTypeReadDto>> GetByPage(
             RoomTypeSearchQueryDto query,
-            CancellationToken ct )
+            CancellationToken cancellationToken )
         {
-            IQueryable<RoomType> queryData = _roomTypeQueryBuilder
-                .Build( _roomTypeRepository.Query().AsNoTracking(), query );
+            IQueryable<RoomType> queryData = _roomTypeQueryBuilder.Build( query );
 
-            int total = await queryData.CountAsync( ct );
-
+            int total = await _roomTypeRepository.Count( queryData, cancellationToken );
             int page = Math.Max( 1, query.Page );
             int size = Math.Clamp( query.Size, 1, 200 );
 
-            List<RoomTypeReadDto> roomTypes = await queryData
-                .Skip( ( int )( ( ( long )page - 1 ) * size ) )
-                .Take( size )
+            IReadOnlyList<RoomType> entities = await _roomTypeRepository.GetPage(
+                queryData,
+                page,
+                size,
+                cancellationToken );
+
+            IReadOnlyList<RoomTypeReadDto> items = entities
                 .Select( rt => new RoomTypeReadDto(
                     rt.Id,
                     rt.PropertyId,
@@ -46,11 +47,11 @@ namespace Application.Services
                     rt.Services.Select( s => new ServiceReadDto( s.Id, s.Name ) ).ToList(),
                     rt.Amenities.Select( a => new AmenityReadDto( a.Id, a.Name ) ).ToList()
                 ) )
-                .ToListAsync( ct );
+                .ToList();
 
             return new PagedResultDto<RoomTypeReadDto>
             {
-                Items = roomTypes,
+                Items = items,
                 Total = total,
                 Page = page,
                 Size = size

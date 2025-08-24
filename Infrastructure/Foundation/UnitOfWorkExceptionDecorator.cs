@@ -13,11 +13,11 @@ namespace Infrastructure.Foundation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task CommitAsync( CancellationToken ct )
+        public async Task CommitAsync( CancellationToken cancellationToken )
         {
             try
             {
-                await _unitOfWork.CommitAsync( ct );
+                await _unitOfWork.CommitAsync( cancellationToken );
             }
             catch ( DbUpdateConcurrencyException ex )
             {

@@ -5,10 +5,10 @@ namespace Application.Services.Interfaces
 {
     public interface IReservationService
     {
-        Task<PagedResultDto<ReservationReadDto>> GetList(ReservationSearchQueryDto query, CancellationToken ct);
-        Task<ReservationReadDto> Get(int id, CancellationToken ct);
-        Task<int> Create(ReservationCreateDto dto, CancellationToken ct);
-        Task Update(int id, ReservationUpdateDto dto, CancellationToken ct);
-        Task Remove(int id, CancellationToken ct);
+        Task<PagedResultDto<ReservationReadDto>> GetByPage(ReservationSearchQueryDto query, CancellationToken cancellationToken);
+        Task<ReservationReadDto> GetById(int id, CancellationToken cancellationToken);
+        Task<int> Create(ReservationCreateDto dto, CancellationToken cancellationToken);
+        Task Update(int id, ReservationUpdateDto dto, CancellationToken cancellationToken);
+        Task Remove(int id, CancellationToken cancellationToken);
     }
 }

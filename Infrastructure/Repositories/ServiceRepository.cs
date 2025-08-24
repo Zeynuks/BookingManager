@@ -13,28 +13,25 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Service?> Get( int id, CancellationToken ct )
+        public async Task<Service?> TryGet( int id, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Service>().FirstOrDefaultAsync( x => x.Id == id, ct );
+            return await _dbContext.Services
+                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
         }
 
-        public async Task<List<Service>> GetList( CancellationToken ct )
+        public async Task<IReadOnlyList<Service>> GetList( CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Service>().ToListAsync( ct );
+            return await _dbContext.Services
+                .AsNoTracking()
+                .ToListAsync( cancellationToken );
         }
 
-        public async Task<List<Service>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken ct )
+        public async Task<IReadOnlyList<Service>> GetListByIds( IReadOnlyCollection<int> ids, CancellationToken cancellationToken )
         {
-            return await _dbContext.Set<Service>()
+            return await _dbContext.Services
                 .Where( s => ids.Contains( s.Id ) )
-                .ToListAsync( ct );
-        }
-
-        public async Task<List<Service>> GetListByRoomType( int roomTypeId, CancellationToken ct )
-        {
-            return await _dbContext.Set<Service>()
-                .Where( s => s.RoomTypes.Any( t => t.Id == roomTypeId ) )
-                .ToListAsync( ct );
+                .AsNoTracking()
+                .ToListAsync( cancellationToken );
         }
 
         public void Add( Service service )
@@ -44,7 +41,7 @@ namespace Infrastructure.Repositories
 
         public void Delete( Service service )
         {
-            _dbContext.Set<Service>().Remove( service );
+            _dbContext.Services.Remove( service );
         }
     }
 }

@@ -2,13 +2,23 @@ using Application.DTOs.Properties;
 using Application.Queries.Interfaces;
 using Application.Queries.Specs;
 using Domain.Entities;
+using Domain.Repositories;
 
 namespace Application.Queries
 {
     public sealed class RoomTypeQueryBuilder : IRoomTypeQueryBuilder
     {
-        public IQueryable<RoomType> Build( IQueryable<RoomType> source, RoomTypeSearchQueryDto query )
+        private readonly IRoomTypeRepository _roomTypeRepository;
+
+        private RoomTypeQueryBuilder( IRoomTypeRepository roomTypeRepository )
         {
+            _roomTypeRepository = roomTypeRepository;
+        }
+
+        public IQueryable<RoomType> Build( RoomTypeSearchQueryDto query )
+        {
+            IQueryable<RoomType> source = _roomTypeRepository.Query();
+
             int requiredGuests = query.Guests.GetValueOrDefault( 1 );
 
             if ( query.ArrivalDate is not null && query.DepartureDate is not null )
