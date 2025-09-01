@@ -6,13 +6,12 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace BookingManager.Controllers.ReservationsApi
 {
-    /// <summary>Поиск вариантов размещения.</summary>
+    /// <summary>
+    /// Поиск вариантов размещения.
+    /// </summary>
     [ApiController]
     [ApiExplorerSettings( GroupName = "reservations" )]
     [Route( "api/search" )]
-    [Produces( "application/json" )]
-    [Consumes( "application/json" )]
-    [Tags( "Search" )]
     public class RoomTypeSearchController : ControllerBase
     {
         private readonly IRoomTypeSearchService _roomTypeSearchService;
@@ -22,17 +21,18 @@ namespace BookingManager.Controllers.ReservationsApi
             _roomTypeSearchService = roomTypeSearchService;
         }
 
-        /// <summary>Поиск типов комнат.</summary>
+        /// <summary>
+        /// Поиск типов комнат.
+        /// </summary>
         /// <remarks>Фильтры: город, даты, гости, цена, удобства/сервисы.</remarks>
         /// <returns>Страница результатов с типами комнат.</returns>
         [HttpGet]
         [SwaggerOperation( OperationId = "Search_GetRoomTypes", Summary = "Поиск типов комнат" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( PagedResultDto<RoomTypeReadDto> ) )]
         public async Task<IActionResult> Search(
-            [FromQuery] RoomTypeSearchQueryDto query,
-            CancellationToken cancellationToken )
+            [FromQuery] RoomTypeSearchQueryDto query )
         {
-            PagedResultDto<RoomTypeReadDto> result = await _roomTypeSearchService.GetByPage( query, cancellationToken );
+            PagedResultDto<RoomTypeReadDto> result = await _roomTypeSearchService.GetByPage( query );
 
             return Ok( result );
         }

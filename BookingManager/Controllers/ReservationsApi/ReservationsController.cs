@@ -6,13 +6,12 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace BookingManager.Controllers.ReservationsApi
 {
-    /// <summary>Операции над бронями.</summary>
+    /// <summary>
+    /// Операции над бронями.
+    /// </summary>
     [ApiController]
     [ApiExplorerSettings( GroupName = "reservations" )]
     [Route( "api/reservations" )]
-    [Produces( "application/json" )]
-    [Consumes( "application/json" )]
-    [Tags( "Reservations" )]
     public class ReservationsController : ControllerBase
     {
         private readonly IReservationService _reservationService;
@@ -22,20 +21,24 @@ namespace BookingManager.Controllers.ReservationsApi
             _reservationService = reservationService;
         }
 
-        /// <summary>Получить бронирование по идентификатору.</summary>
+        /// <summary>
+        /// Получить бронирование по идентификатору.
+        /// </summary>
         /// <returns>Объект бронирования или код 404, если не найдено.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "Reservations_GetById", Summary = "Получить бронирование по Id" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( ReservationReadDto ) )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> GetById( int id, CancellationToken cancellationToken )
+        public async Task<IActionResult> GetById( int id )
         {
-            ReservationReadDto dto = await _reservationService.GetById( id, cancellationToken );
+            ReservationReadDto dto = await _reservationService.GetById( id );
 
             return Ok( dto );
         }
 
-        /// <summary>Обновить бронирование.</summary>
+        /// <summary>
+        /// Обновить бронирование.
+        /// </summary>
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "Reservations_Update", Summary = "Обновить бронирование" )]
@@ -44,53 +47,55 @@ namespace BookingManager.Controllers.ReservationsApi
         [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Update(
             int id,
-            [FromBody] ReservationUpdateDto dto,
-            CancellationToken cancellationToken )
+            [FromBody] ReservationUpdateDto dto )
         {
-            await _reservationService.Update( id, dto, cancellationToken );
+            await _reservationService.Update( id, dto );
 
             return NoContent();
         }
 
-        /// <summary>Удалить бронирование.</summary>
+        /// <summary>
+        /// Удалить бронирование.
+        /// </summary>
         /// <returns>Код 204 без содержимого при успешном удалении.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "Reservations_Delete", Summary = "Удалить бронирование" )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
-        public async Task<IActionResult> Delete( int id, CancellationToken cancellationToken )
+        public async Task<IActionResult> Delete( int id )
         {
-            await _reservationService.Remove( id, cancellationToken );
+            await _reservationService.Remove( id );
 
             return NoContent();
         }
 
-        /// <summary>Получить список бронирований по критериям.</summary>
+        /// <summary>
+        /// Получить список бронирований по критериям.
+        /// </summary>
         /// <returns>Страница результатов с бронированиями.</returns>
         [HttpPost( "search" )]
         [SwaggerOperation( OperationId = "Reservations_GetList", Summary = "Список бронирований (поиск/фильтр)" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( PagedResultDto<ReservationReadDto> ) )]
         public async Task<IActionResult> GetList(
-            [FromBody] ReservationSearchQueryDto query,
-            CancellationToken cancellationToken )
+            [FromBody] ReservationSearchQueryDto query )
         {
-            PagedResultDto<ReservationReadDto> result = await _reservationService.GetByPage( query, cancellationToken );
+            PagedResultDto<ReservationReadDto> result = await _reservationService.GetByPage( query );
 
             return Ok( result );
         }
 
-
-        /// <summary>Создать бронирование.</summary>
+        /// <summary>
+        /// Создать бронирование.
+        /// </summary>
         /// <returns>Созданное бронирование с кодом 201 и заголовком Location.</returns>
         [HttpPost]
         [SwaggerOperation( OperationId = "Reservations_Create", Summary = "Создать бронирование" )]
         [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( ReservationReadDto ) )]
         [ProducesResponseType( StatusCodes.Status400BadRequest )]
         public async Task<IActionResult> Create(
-            [FromBody] ReservationCreateDto dto,
-            CancellationToken cancellationToken )
+            [FromBody] ReservationCreateDto dto )
         {
-            int id = await _reservationService.Create( dto, cancellationToken );
-            ReservationReadDto created = await _reservationService.GetById( id, cancellationToken );
+            int id = await _reservationService.Create( dto );
+            ReservationReadDto created = await _reservationService.GetById( id );
 
             RouteValueDictionary routeValues = new()
             {

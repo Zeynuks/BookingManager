@@ -5,13 +5,12 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace BookingManager.Controllers.PropertiesApi
 {
-    /// <summary>Операции над сервисами.</summary>
+    /// <summary>
+    /// Операции над сервисами.
+    /// </summary>
     [ApiController]
     [ApiExplorerSettings( GroupName = "properties" )]
     [Route( "api/services" )]
-    [Produces( "application/json" )]
-    [Consumes( "application/json" )]
-    [Tags( "Services" )]
     public class ServiceController : ControllerBase
     {
         private readonly IServiceService _serviceService;
@@ -21,46 +20,49 @@ namespace BookingManager.Controllers.PropertiesApi
             _serviceService = serviceService;
         }
 
-        /// <summary>Получить сервис по идентификатору.</summary>
+        /// <summary>
+        /// Получить сервис по идентификатору.
+        /// </summary>
         /// <param name="id">Идентификатор сервиса.</param>
-        /// <param name="cancellationToken">Токен отмены.</param>
         /// <returns>Объект сервиса или код 404, если не найден.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "Services_GetById", Summary = "Получить сервис по Id" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( ServiceReadDto ) )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> GetById( int id, CancellationToken cancellationToken )
+        public async Task<IActionResult> GetById( int id )
         {
-            ServiceReadDto dto = await _serviceService.GetById( id, cancellationToken );
+            ServiceReadDto dto = await _serviceService.GetById( id );
 
             return Ok( dto );
         }
 
-        /// <summary>Получить список сервисов.</summary>
-        /// <param name="cancellationToken">Токен отмены.</param>
+        /// <summary>
+        /// Получить список сервисов.
+        /// </summary>
         /// <returns>Список сервисов.</returns>
         [HttpGet]
         [SwaggerOperation( OperationId = "Services_GetList", Summary = "Список сервисов" )]
         [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<ServiceReadDto> ) )]
-        public async Task<IActionResult> GetList( CancellationToken cancellationToken )
+        public async Task<IActionResult> GetList()
         {
-            IReadOnlyList<ServiceReadDto> getList = await _serviceService.GetList( cancellationToken );
+            IReadOnlyList<ServiceReadDto> getList = await _serviceService.GetList();
 
             return Ok( getList );
         }
 
-        /// <summary>Создать сервис.</summary>
+        /// <summary>
+        /// Создать сервис.
+        /// </summary>
         /// <param name="dto">Данные для создания.</param>
-        /// <param name="cancellationToken">Токен отмены.</param>
         /// <returns>Созданный сервис с кодом 201 и заголовком Location.</returns>
         [HttpPost]
         [SwaggerOperation( OperationId = "Services_Create", Summary = "Создать сервис" )]
         [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( ServiceReadDto ) )]
         [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        public async Task<IActionResult> Create( [FromBody] ServiceCreateDto dto, CancellationToken cancellationToken )
+        public async Task<IActionResult> Create( [FromBody] ServiceCreateDto dto )
         {
-            int id = await _serviceService.Create( dto, cancellationToken );
-            ServiceReadDto createdService = await _serviceService.GetById( id, cancellationToken );
+            int id = await _serviceService.Create( dto );
+            ServiceReadDto createdService = await _serviceService.GetById( id );
 
             RouteValueDictionary routeValues = new()
             {
@@ -70,35 +72,36 @@ namespace BookingManager.Controllers.PropertiesApi
             return CreatedAtAction( nameof( GetById ), routeValues, createdService );
         }
 
-        /// <summary>Обновить сервис.</summary>
+        /// <summary>
+        /// Обновить сервис.
+        /// </summary>
         /// <param name="id">Идентификатор сервиса.</param>
         /// <param name="dto">Новые данные.</param>
-        /// <param name="cancellationToken">Токен отмены.</param>
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "Services_Update", Summary = "Обновить сервис" )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
         [ProducesResponseType( StatusCodes.Status400BadRequest )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> Update( int id, [FromBody] ServiceUpdateDto dto,
-            CancellationToken cancellationToken )
+        public async Task<IActionResult> Update( int id, [FromBody] ServiceUpdateDto dto )
         {
-            await _serviceService.Update( id, dto, cancellationToken );
+            await _serviceService.Update( id, dto );
 
             return NoContent();
         }
 
-        /// <summary>Удалить сервис.</summary>
+        /// <summary>
+        /// Удалить сервис.
+        /// </summary>
         /// <param name="id">Идентификатор сервиса.</param>
-        /// <param name="cancellationToken">Токен отмены.</param>
         /// <returns>Код 204 без содержимого при успешном удалении; 404 если не найден.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "Services_Remove", Summary = "Удалить сервис" )]
         [ProducesResponseType( StatusCodes.Status204NoContent )]
         [ProducesResponseType( StatusCodes.Status404NotFound )]
-        public async Task<IActionResult> Remove( int id, CancellationToken cancellationToken )
+        public async Task<IActionResult> Remove( int id )
         {
-            await _serviceService.Remove( id, cancellationToken );
+            await _serviceService.Remove( id );
 
             return NoContent();
         }
