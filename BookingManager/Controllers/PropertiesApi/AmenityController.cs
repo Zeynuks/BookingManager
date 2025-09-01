@@ -27,8 +27,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Объект услуги или код 404, если не найдено.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "Amenities_GetById", Summary = "Получить услугу по Id" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( AmenityReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetById( int id )
         {
             AmenityReadDto dto = await _amenityService.GetById( id );
@@ -41,7 +39,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Список услуг.</returns>
         [HttpGet]
         [SwaggerOperation( OperationId = "Amenities_GetList", Summary = "Список услуг" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<AmenityReadDto> ) )]
         public async Task<IActionResult> GetList()
         {
             IReadOnlyList<AmenityReadDto> getList = await _amenityService.GetList();
@@ -55,8 +52,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Созданная услуга с кодом 201 и заголовком Location.</returns>
         [HttpPost]
         [SwaggerOperation( OperationId = "Amenities_Create", Summary = "Создать услугу" )]
-        [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( AmenityReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
         public async Task<IActionResult> Create( [FromBody] AmenityCreateDto dto )
         {
             int id = await _amenityService.Create( dto );
@@ -78,9 +73,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "Amenities_Update", Summary = "Обновить услугу" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Update( int id, [FromBody] AmenityUpdateDto dto )
         {
             await _amenityService.Update( id, dto );
@@ -94,8 +86,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном удалении; 404 если не найдена.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "Amenities_Remove", Summary = "Удалить услугу" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Remove( int id )
         {
             await _amenityService.Remove( id );

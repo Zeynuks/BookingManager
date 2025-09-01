@@ -28,7 +28,6 @@ namespace BookingManager.Controllers.ReservationsApi
         /// <returns>Страница результатов с типами комнат.</returns>
         [HttpGet]
         [SwaggerOperation( OperationId = "Search_GetRoomTypes", Summary = "Поиск типов комнат" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( PagedResultDto<RoomTypeReadDto> ) )]
         public async Task<IActionResult> Search(
             [FromQuery] RoomTypeSearchQueryDto query )
         {

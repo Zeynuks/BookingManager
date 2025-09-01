@@ -29,8 +29,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Созданный отель с кодом 201 и заголовком Location.</returns>
         [HttpPost]
         [SwaggerOperation( OperationId = "Properties_Create", Summary = "Создать отель" )]
-        [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( PropertyReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
         public async Task<IActionResult> Create( [FromBody] PropertyCreateDto dto )
         {
             int id = await _propertyService.Create( dto );
@@ -50,7 +48,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Список отелей.</returns>
         [HttpGet]
         [SwaggerOperation( OperationId = "Properties_GetList", Summary = "Список отелей" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<PropertyReadDto> ) )]
         public async Task<IActionResult> GetList()
         {
             IReadOnlyList<PropertyReadDto> getList = await _propertyService.GetList();
@@ -65,8 +62,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Объект отеля или код 404, если не найден.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "Properties_GetById", Summary = "Получить отель по Id" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( PropertyReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetById( int id )
         {
             PropertyReadDto dto = await _propertyService.GetById( id );
@@ -82,9 +77,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "Properties_Update", Summary = "Обновить отель" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Update(
             int id,
             [FromBody] PropertyUpdateDto dto )
@@ -101,8 +93,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном удалении; 404 если не найден.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "Properties_Delete", Summary = "Удалить отель" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Delete( int id )
         {
             await _propertyService.Remove( id );
@@ -117,8 +107,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Список типов комнат для указанного отеля.</returns>
         [HttpGet( "{id:int}/room-types" )]
         [SwaggerOperation( OperationId = "Properties_GetRoomTypes", Summary = "Типы комнат отеля" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<RoomTypeDto> ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetRoomTypes( int id )
         {
             IReadOnlyList<RoomTypeDto> getList = await _roomTypeService.GetListByProperty( id );
@@ -134,9 +122,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Созданный тип комнаты с кодом 201 и заголовком Location.</returns>
         [HttpPost( "{id:int}/room-types" )]
         [SwaggerOperation( OperationId = "Properties_CreateRoomType", Summary = "Создать тип комнаты в отеле" )]
-        [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( RoomTypeDto ) )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> CreateRoomType( int id, [FromBody] RoomTypeCreateDto dto )
         {
             int roomTypeId = await _roomTypeService.Create( id, dto );

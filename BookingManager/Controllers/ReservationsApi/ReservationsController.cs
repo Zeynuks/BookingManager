@@ -27,8 +27,6 @@ namespace BookingManager.Controllers.ReservationsApi
         /// <returns>Объект бронирования или код 404, если не найдено.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "Reservations_GetById", Summary = "Получить бронирование по Id" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( ReservationReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetById( int id )
         {
             ReservationReadDto dto = await _reservationService.GetById( id );
@@ -42,9 +40,6 @@ namespace BookingManager.Controllers.ReservationsApi
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "Reservations_Update", Summary = "Обновить бронирование" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Update(
             int id,
             [FromBody] ReservationUpdateDto dto )
@@ -60,7 +55,6 @@ namespace BookingManager.Controllers.ReservationsApi
         /// <returns>Код 204 без содержимого при успешном удалении.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "Reservations_Delete", Summary = "Удалить бронирование" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
         public async Task<IActionResult> Delete( int id )
         {
             await _reservationService.Remove( id );
@@ -74,7 +68,6 @@ namespace BookingManager.Controllers.ReservationsApi
         /// <returns>Страница результатов с бронированиями.</returns>
         [HttpPost( "search" )]
         [SwaggerOperation( OperationId = "Reservations_GetList", Summary = "Список бронирований (поиск/фильтр)" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( PagedResultDto<ReservationReadDto> ) )]
         public async Task<IActionResult> GetList(
             [FromBody] ReservationSearchQueryDto query )
         {
@@ -89,8 +82,6 @@ namespace BookingManager.Controllers.ReservationsApi
         /// <returns>Созданное бронирование с кодом 201 и заголовком Location.</returns>
         [HttpPost]
         [SwaggerOperation( OperationId = "Reservations_Create", Summary = "Создать бронирование" )]
-        [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( ReservationReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
         public async Task<IActionResult> Create(
             [FromBody] ReservationCreateDto dto )
         {

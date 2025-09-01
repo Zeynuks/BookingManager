@@ -31,8 +31,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Тип комнаты или код 404, если не найден.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "RoomTypes_GetById", Summary = "Получить тип комнаты по Id" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( RoomTypeDto ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetById( int id )
         {
             RoomTypeDto dto = await _roomTypeService.GetById( id );
@@ -48,9 +46,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "RoomTypes_Update", Summary = "Обновить тип комнаты" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Update(
             int id,
             [FromBody] RoomTypeUpdateDto dto )
@@ -67,8 +62,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном удалении; 404 если не найден.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "RoomTypes_Delete", Summary = "Удалить тип комнаты" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Delete( int id )
         {
             await _roomTypeService.Remove( id );
@@ -83,8 +76,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Список комнат указанного типа.</returns>
         [HttpGet( "{id:int}/rooms" )]
         [SwaggerOperation( OperationId = "RoomTypes_GetRooms", Summary = "Список комнат этого типа" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( IReadOnlyList<RoomReadDto> ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetRooms( int id )
         {
             IReadOnlyList<RoomReadDto> getList = await _roomService.GetListByRoomTypeId( id );
@@ -100,9 +91,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Созданная комната с кодом 201 и заголовком Location.</returns>
         [HttpPost( "{id:int}/rooms" )]
         [SwaggerOperation( OperationId = "RoomTypes_CreateRoom", Summary = "Создать комнату выбранного типа" )]
-        [ProducesResponseType( StatusCodes.Status201Created, Type = typeof( RoomReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> CreateRoom(
             int id,
             [FromBody] RoomCreateDto dto )

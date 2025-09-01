@@ -27,8 +27,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Объект комнаты или код 404, если не найдена.</returns>
         [HttpGet( "{id:int}" )]
         [SwaggerOperation( OperationId = "Rooms_GetById", Summary = "Получить комнату по Id" )]
-        [ProducesResponseType( StatusCodes.Status200OK, Type = typeof( RoomReadDto ) )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> GetById( int id )
         {
             RoomReadDto dto = await _roomService.GetById( id );
@@ -44,9 +42,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном обновлении; 400/404 при ошибке.</returns>
         [HttpPut( "{id:int}" )]
         [SwaggerOperation( OperationId = "Rooms_Update", Summary = "Обновить комнату" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status400BadRequest )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Update(
             int id,
             [FromBody] RoomUpdateDto dto )
@@ -63,8 +58,6 @@ namespace BookingManager.Controllers.PropertiesApi
         /// <returns>Код 204 без содержимого при успешном удалении; 404 если не найдена.</returns>
         [HttpDelete( "{id:int}" )]
         [SwaggerOperation( OperationId = "Rooms_Delete", Summary = "Удалить комнату" )]
-        [ProducesResponseType( StatusCodes.Status204NoContent )]
-        [ProducesResponseType( StatusCodes.Status404NotFound )]
         public async Task<IActionResult> Delete( int id )
         {
             await _roomService.Remove( id );
