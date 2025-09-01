@@ -25,15 +25,13 @@ namespace Application.Queries.Specs
                     ||
                     (
                         roomType.IsSharedOccupancy
-                        && (
-                            roomType.Rooms.Count() * roomType.MaxPlaces
-                            - roomType.Rooms
-                                .SelectMany( r => r.Reservations )
-                                .Count( reservation =>
-                                    !( reservation.DepartureDate <= arrivalDate
-                                       || reservation.ArrivalDate >= departureDate )
-                                )
-                        ) >= requiredGuests
+                        && roomType.Rooms.Count() * roomType.MaxPlaces
+                        - roomType.Rooms
+                            .SelectMany( r => r.Reservations )
+                            .Count( reservation =>
+                                !( reservation.DepartureDate <= arrivalDate
+                                   || reservation.ArrivalDate >= departureDate )
+                            ) >= requiredGuests
                     );
 
         public static Expression<Func<RoomType, bool>> HasAvailabilityToday( int requiredGuests )

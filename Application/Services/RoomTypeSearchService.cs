@@ -21,20 +21,18 @@ namespace Application.Services
         }
 
         public async Task<PagedResultDto<RoomTypeReadDto>> GetByPage(
-            RoomTypeSearchQueryDto query,
-            CancellationToken cancellationToken )
+            RoomTypeSearchQueryDto query )
         {
             IQueryable<RoomType> queryData = _roomTypeQueryBuilder.Build( query );
 
-            int total = await _roomTypeRepository.Count( queryData, cancellationToken );
+            int total = await _roomTypeRepository.Count( queryData );
             int page = Math.Max( 1, query.Page );
             int size = Math.Clamp( query.Size, 1, 200 );
 
             IReadOnlyList<RoomType> entities = await _roomTypeRepository.GetPage(
                 queryData,
                 page,
-                size,
-                cancellationToken );
+                size );
 
             IReadOnlyList<RoomTypeReadDto> items = entities
                 .Select( rt => new RoomTypeReadDto(

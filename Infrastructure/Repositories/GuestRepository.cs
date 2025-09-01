@@ -13,17 +13,17 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Guest?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<Guest?> TryGet( int id )
         {
             return await _dbContext.Guests
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
-        public async Task<IReadOnlyList<Guest>> GetList( CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Guest>> GetReadOnlyList()
         {
             return await _dbContext.Guests
                 .AsNoTracking()
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
         public void Add( Guest guest )

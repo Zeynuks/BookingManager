@@ -29,21 +29,18 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PagedResultDto<ReservationReadDto>> GetByPage(
-            ReservationSearchQueryDto query,
-            CancellationToken cancellationToken )
+        public async Task<PagedResultDto<ReservationReadDto>> GetByPage( ReservationSearchQueryDto query )
         {
             IQueryable<Reservation> queryData = _reservationQueryBuilder.Build( query );
 
-            int total = await _reservationRepository.Count( queryData, cancellationToken );
+            int total = await _reservationRepository.Count( queryData );
             int page = Math.Max( 1, query.Page );
             int size = Math.Clamp( query.Size, 1, 200 );
 
             IReadOnlyList<Reservation> entities = await _reservationRepository.GetPage(
                 queryData,
                 page,
-                size,
-                cancellationToken );
+                size );
 
             IReadOnlyList<ReservationReadDto> items = entities
                 .Select( r => new ReservationReadDto(
@@ -69,9 +66,9 @@ namespace Application.Services
             };
         }
 
-        public async Task<ReservationReadDto> GetById( int id, CancellationToken cancellationToken )
+        public async Task<ReservationReadDto> GetById( int id )
         {
-            Reservation? r = await _reservationRepository.TryGet( id, cancellationToken );
+            Reservation? r = await _reservationRepository.TryGet( id );
             if ( r is null )
             {
                 throw new DomainNotFoundException( $"Reservation with ID {id} could not be found." );
@@ -90,14 +87,14 @@ namespace Application.Services
                 r.Currency.ToString() );
         }
 
-        public async Task<int> Create( ReservationCreateDto dto, CancellationToken cancellationToken )
+        public async Task<int> Create( ReservationCreateDto dto )
         {
             if ( !Enum.TryParse( dto.Currency, true, out Currency currency ) )
             {
                 throw new BusinessRuleViolationException( $"Invalid currency value: {dto.Currency}" );
             }
 
-            Room? room = await _roomRepository.TryGet( dto.RoomId, cancellationToken );
+            Room? room = await _roomRepository.TryGet( dto.RoomId );
 
             if ( room is null )
             {
@@ -110,8 +107,7 @@ namespace Application.Services
                 dto.ArrivalTime,
                 dto.DepartureDate,
                 dto.DepartureTime,
-                dto.GuestsCount,
-                cancellationToken );
+                dto.GuestsCount );
 
             if ( !isAvailable )
             {
@@ -139,14 +135,14 @@ namespace Application.Services
             );
 
             _reservationRepository.Add( reservation );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
 
             return reservation.Id;
         }
 
-        public async Task Update( int id, ReservationUpdateDto dto, CancellationToken cancellationToken )
+        public async Task Update( int id, ReservationUpdateDto dto )
         {
-            Reservation? reservation = await _reservationRepository.TryGet( id, cancellationToken );
+            Reservation? reservation = await _reservationRepository.TryGet( id );
 
             if ( reservation is null )
             {
@@ -158,7 +154,7 @@ namespace Application.Services
                 throw new BusinessRuleViolationException( $"Invalid currency value: {dto.Currency}" );
             }
 
-            Room? room = await _roomRepository.TryGet( dto.RoomId, cancellationToken );
+            Room? room = await _roomRepository.TryGet( dto.RoomId );
 
             if ( room is null )
             {
@@ -171,8 +167,7 @@ namespace Application.Services
                 dto.ArrivalTime,
                 dto.DepartureDate,
                 dto.DepartureTime,
-                dto.GuestsCount,
-                cancellationToken );
+                dto.GuestsCount );
 
             if ( !isAvailable )
             {
@@ -197,19 +192,19 @@ namespace Application.Services
                 currency
             );
 
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
 
-        public async Task Remove( int id, CancellationToken cancellationToken )
+        public async Task Remove( int id )
         {
-            Reservation? reservation = await _reservationRepository.TryGet( id, cancellationToken );
+            Reservation? reservation = await _reservationRepository.TryGet( id );
             if ( reservation is null )
             {
                 throw new DomainNotFoundException( $"Reservation with ID {id} could not be found." );
             }
 
             _reservationRepository.Delete( reservation );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
 
         private static decimal CalculateTotal(

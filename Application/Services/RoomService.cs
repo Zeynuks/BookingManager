@@ -23,9 +23,9 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RoomReadDto> GetById( int id, CancellationToken cancellationToken )
+        public async Task<RoomReadDto> GetById( int id )
         {
-            Room? room = await _roomRepository.TryGet( id, cancellationToken );
+            Room? room = await _roomRepository.TryGet( id );
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {id} could not be found." );
@@ -37,16 +37,15 @@ namespace Application.Services
                 room.Number );
         }
 
-        public async Task<IReadOnlyList<RoomReadDto>> GetListByRoomTypeId( int roomTypeId,
-            CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<RoomReadDto>> GetListByRoomTypeId( int roomTypeId )
         {
-            RoomType? roomType = await _roomTypesRepository.TryGet( roomTypeId, cancellationToken );
+            RoomType? roomType = await _roomTypesRepository.TryGet( roomTypeId );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {roomTypeId} could not be found." );
             }
 
-            IReadOnlyList<Room> rooms = await _roomRepository.GetListByRoomType( roomTypeId, cancellationToken );
+            IReadOnlyList<Room> rooms = await _roomRepository.GetListByRoomType( roomTypeId );
 
             return rooms
                 .Select( r => new RoomReadDto(
@@ -56,9 +55,9 @@ namespace Application.Services
                 .ToList();
         }
 
-        public async Task<int> Create( int roomTypeId, RoomCreateDto dto, CancellationToken cancellationToken )
+        public async Task<int> Create( int roomTypeId, RoomCreateDto dto )
         {
-            RoomType? roomType = await _roomTypesRepository.TryGet( roomTypeId, cancellationToken );
+            RoomType? roomType = await _roomTypesRepository.TryGet( roomTypeId );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {roomTypeId} could not be found." );
@@ -69,39 +68,39 @@ namespace Application.Services
                 dto.Number );
 
             _roomRepository.Add( room );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
 
             return room.Id;
         }
 
-        public async Task Update( int id, RoomUpdateDto dto, CancellationToken cancellationToken )
+        public async Task Update( int id, RoomUpdateDto dto )
         {
-            Room? room = await _roomRepository.TryGet( id, cancellationToken );
+            Room? room = await _roomRepository.TryGet( id );
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {id} could not be found." );
             }
 
-            RoomType? roomType = await _roomTypesRepository.TryGet( room.RoomTypeId, cancellationToken );
+            RoomType? roomType = await _roomTypesRepository.TryGet( room.RoomTypeId );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {room.RoomTypeId} could not be found." );
             }
 
             room.Update( dto.RoomTypeId, dto.Number );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
 
-        public async Task Remove( int id, CancellationToken cancellationToken )
+        public async Task Remove( int id )
         {
-            Room? room = await _roomRepository.TryGet( id, cancellationToken );
+            Room? room = await _roomRepository.TryGet( id );
             if ( room is null )
             {
                 throw new DomainNotFoundException( $"Room with ID {id} could not be found." );
             }
 
             _roomRepository.Delete( room );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
     }
 }

@@ -29,9 +29,9 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RoomTypeReadDto> GetById( int id, CancellationToken cancellationToken )
+        public async Task<RoomTypeReadDto> GetById( int id )
         {
-            RoomType? roomType = await _roomTypeRepository.TryGet( id, cancellationToken );
+            RoomType? roomType = await _roomTypeRepository.TryGet( id );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {id} could not be found." );
@@ -48,17 +48,16 @@ namespace Application.Services
                 roomType.Amenities.Select( a => new AmenityReadDto( a.Id, a.Name ) ).ToList() );
         }
 
-        public async Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId,
-            CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<RoomTypeReadDto>> GetListByProperty( int propertyId )
         {
-            Property? property = await _propertyRepository.TryGet( propertyId, cancellationToken );
+            Property? property = await _propertyRepository.TryGet( propertyId );
             if ( property is null )
             {
                 throw new DomainNotFoundException( $"Property with ID {propertyId} could not be found." );
             }
 
             IReadOnlyList<RoomType> roomTypes =
-                await _roomTypeRepository.GetListByProperty( property.Id, cancellationToken );
+                await _roomTypeRepository.GetListByProperty( property.Id );
 
             return roomTypes
                 .Select( roomType => new RoomTypeReadDto(
@@ -73,9 +72,9 @@ namespace Application.Services
                 .ToList();
         }
 
-        public async Task<int> Create( int propertyId, RoomTypeCreateDto dto, CancellationToken cancellationToken )
+        public async Task<int> Create( int propertyId, RoomTypeCreateDto dto )
         {
-            Property? property = await _propertyRepository.TryGet( propertyId, cancellationToken );
+            Property? property = await _propertyRepository.TryGet( propertyId );
             if ( property is null )
             {
                 throw new DomainNotFoundException( $"Property with ID {propertyId} could not be found." );
@@ -90,7 +89,7 @@ namespace Application.Services
             if ( dto.ServiceIds is { Count: > 0 } )
             {
                 IReadOnlyList<Service> services =
-                    await _serviceRepository.GetListByIds( dto.ServiceIds, cancellationToken );
+                    await _serviceRepository.GetReadOnlyListByIds( dto.ServiceIds );
                 EnsureAllFound( dto.ServiceIds, services.Select( x => x.Id ).ToList(), "Service" );
                 foreach ( Service s in services )
                 {
@@ -101,7 +100,7 @@ namespace Application.Services
             if ( dto.AmenityIds is { Count: > 0 } )
             {
                 IReadOnlyList<Amenity> amenities =
-                    await _amenityRepository.GetListByIds( dto.AmenityIds, cancellationToken );
+                    await _amenityRepository.GetReadOnlyListByIds( dto.AmenityIds );
                 EnsureAllFound( dto.AmenityIds, amenities.Select( x => x.Id ).ToList(), "Amenity" );
                 foreach ( Amenity a in amenities )
                 {
@@ -110,14 +109,14 @@ namespace Application.Services
             }
 
             _roomTypeRepository.Add( roomType );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
 
             return roomType.Id;
         }
 
-        public async Task Update( int id, RoomTypeUpdateDto dto, CancellationToken cancellationToken )
+        public async Task Update( int id, RoomTypeUpdateDto dto )
         {
-            RoomType? roomType = await _roomTypeRepository.TryGet( id, cancellationToken );
+            RoomType? roomType = await _roomTypeRepository.TryGet( id );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {id} could not be found." );
@@ -135,7 +134,7 @@ namespace Application.Services
                     roomType.Services,
                     dto.ServiceIds,
                     s => s.Id,
-                    ids => _serviceRepository.GetListByIds( ids, cancellationToken ),
+                    ids => _serviceRepository.GetReadOnlyListByIds( ids ),
                     ( service ) => roomType.AddService( service ),
                     ( service ) => roomType.RemoveService( service ) );
             }
@@ -146,24 +145,24 @@ namespace Application.Services
                     roomType.Amenities,
                     dto.AmenityIds,
                     a => a.Id,
-                    ids => _amenityRepository.GetListByIds( ids, cancellationToken ),
+                    ids => _amenityRepository.GetReadOnlyListByIds( ids ),
                     ( amenity ) => roomType.AddAmenity( amenity ),
                     ( amenity ) => roomType.RemoveAmenity( amenity ) );
             }
 
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
 
-        public async Task Remove( int id, CancellationToken cancellationToken )
+        public async Task Remove( int id )
         {
-            RoomType? roomType = await _roomTypeRepository.TryGet( id, cancellationToken );
+            RoomType? roomType = await _roomTypeRepository.TryGet( id );
             if ( roomType is null )
             {
                 throw new DomainNotFoundException( $"RoomType with ID {id} could not be found." );
             }
 
             _roomTypeRepository.Delete( roomType );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
 
         private static void EnsureAllFound(

@@ -13,10 +13,10 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Reservation?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<Reservation?> TryGet( int id )
         {
             return await _dbContext.Reservations
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
         public void Add( Reservation reservation )
@@ -34,24 +34,18 @@ namespace Infrastructure.Repositories
             return _dbContext.Reservations;
         }
 
-        public Task<int> Count(
-            IQueryable<Reservation> query,
-            CancellationToken cancellationToken )
+        public Task<int> Count( IQueryable<Reservation> query )
         {
-            return query.CountAsync( cancellationToken );
+            return query.CountAsync();
         }
 
-        public async Task<IReadOnlyList<Reservation>> GetPage(
-            IQueryable<Reservation> query,
-            int page,
-            int size,
-            CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Reservation>> GetPage( IQueryable<Reservation> query, int page, int size )
         {
             return await query
                 .AsNoTracking()
                 .Skip( ( page - 1 ) * size )
                 .Take( size )
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
     }
 }

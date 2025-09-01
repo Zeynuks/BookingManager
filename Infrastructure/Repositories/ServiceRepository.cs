@@ -13,26 +13,25 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Service?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<Service?> TryGet( int id )
         {
             return await _dbContext.Services
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
-        public async Task<IReadOnlyList<Service>> GetList( CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Service>> GetReadOnlyList()
         {
             return await _dbContext.Services
                 .AsNoTracking()
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<Service>> GetListByIds( IReadOnlyCollection<int> ids,
-            CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Service>> GetReadOnlyListByIds( IReadOnlyCollection<int> ids )
         {
             return await _dbContext.Services
                 .Where( s => ids.Contains( s.Id ) )
                 .AsNoTracking()
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
         public void Add( Service service )

@@ -13,26 +13,25 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Amenity?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<Amenity?> TryGet( int id )
         {
             return await _dbContext.Amenities
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
-        public async Task<IReadOnlyList<Amenity>> GetList( CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Amenity>> GetReadOnlyList()
         {
             return await _dbContext.Amenities
                 .AsNoTracking()
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<Amenity>> GetListByIds( IReadOnlyCollection<int> ids,
-            CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Amenity>> GetReadOnlyListByIds( IReadOnlyCollection<int> ids )
         {
             return await _dbContext.Amenities
                 .AsNoTracking()
                 .Where( a => ids.Contains( a.Id ) )
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
         public void Add( Amenity amenity )

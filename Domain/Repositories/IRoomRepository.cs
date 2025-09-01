@@ -4,11 +4,10 @@ namespace Domain.Repositories
 {
     public interface IRoomRepository
     {
-        Task<Room?> TryGet( int id, CancellationToken cancellationToken );
-        Task<IReadOnlyList<Room>> GetListByRoomType( int roomTypeId, CancellationToken cancellationToken );
+        Task<Room?> TryGet( int id );
+        Task<IReadOnlyList<Room>> GetListByRoomType( int roomTypeId );
         void Add( Room room );
         void Delete( Room room );
-        public IQueryable<Room> Query();
 
         Task<bool> IsAvailable(
             int roomId,
@@ -16,7 +15,6 @@ namespace Domain.Repositories
             TimeOnly arrivalTime,
             DateOnly departureDate,
             TimeOnly departureTime,
-            int guestsCount,
-            CancellationToken cancellationToken );
+            int guestsCount );
     }
 }

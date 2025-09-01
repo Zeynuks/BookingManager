@@ -4,10 +4,10 @@ namespace Application.Services.Interfaces
 {
     public interface IServiceService
     {
-        Task<ServiceReadDto> GetById( int id, CancellationToken cancellationToken );
-        Task<IReadOnlyList<ServiceReadDto>> GetList( CancellationToken cancellationToken );
-        Task<int> Create( ServiceCreateDto dto, CancellationToken cancellationToken );
-        Task Update( int id, ServiceUpdateDto dto, CancellationToken cancellationToken );
-        Task Remove( int id, CancellationToken cancellationToken );
+        Task<ServiceReadDto> GetById( int id );
+        Task<IReadOnlyList<ServiceReadDto>> GetList();
+        Task<int> Create( ServiceCreateDto dto );
+        Task Update( int id, ServiceUpdateDto dto );
+        Task Remove( int id );
     }
 }

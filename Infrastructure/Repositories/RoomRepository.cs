@@ -13,20 +13,20 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Room?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<Room?> TryGet( int id )
         {
             return await _dbContext.Rooms
                 .Include( r => r.RoomType )
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
-        public async Task<IReadOnlyList<Room>> GetListByRoomType( int roomTypeId, CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Room>> GetListByRoomType( int roomTypeId )
         {
             return await _dbContext.Rooms
                 .Where( x => x.RoomTypeId == roomTypeId )
                 .OrderBy( x => x.Number )
                 .AsNoTracking()
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
         public void Add( Room room )
@@ -50,13 +50,12 @@ namespace Infrastructure.Repositories
             TimeOnly arrivalTime,
             DateOnly departureDate,
             TimeOnly departureTime,
-            int guestsCount,
-            CancellationToken cancellationToken )
+            int guestsCount )
         {
             Room room = await _dbContext.Rooms
                 .AsNoTracking()
                 .Include( r => r.RoomType )
-                .SingleAsync( r => r.Id == roomId, cancellationToken );
+                .SingleAsync( r => r.Id == roomId );
 
             IQueryable<Reservation> overlapQuery = _dbContext.Reservations
                 .Where( x => x.RoomId == roomId )
@@ -70,14 +69,14 @@ namespace Infrastructure.Repositories
 
             if ( !room.RoomType.IsSharedOccupancy )
             {
-                bool hasOverlap = await overlapQuery.AnyAsync( cancellationToken );
+                bool hasOverlap = await overlapQuery.AnyAsync();
 
                 return !hasOverlap;
             }
 
             int? occupiedNullable = await overlapQuery
                 .Select( x => x.GuestsCount )
-                .SumAsync( cancellationToken );
+                .SumAsync();
 
             int occupied = occupiedNullable ?? 0;
 

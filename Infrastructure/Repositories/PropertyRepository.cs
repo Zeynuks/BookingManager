@@ -13,17 +13,17 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Property?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<Property?> TryGet( int id )
         {
             return await _dbContext.Properties
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
-        public async Task<IReadOnlyList<Property>> GetList( CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<Property>> GetReadOnlyList()
         {
             return await _dbContext.Properties
                 .AsNoTracking()
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
         public void Add( Property property )

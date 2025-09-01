@@ -18,9 +18,9 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AmenityReadDto> GetById( int id, CancellationToken cancellationToken )
+        public async Task<AmenityReadDto> GetById( int id )
         {
-            Amenity? amenity = await _amenityRepository.TryGet( id, cancellationToken );
+            Amenity? amenity = await _amenityRepository.TryGet( id );
             if ( amenity is null )
             {
                 throw new DomainNotFoundException( $"Amenity with ID {id} could not be found." );
@@ -29,45 +29,45 @@ namespace Application.Services
             return new AmenityReadDto( amenity.Id, amenity.Name );
         }
 
-        public async Task<IReadOnlyList<AmenityReadDto>> GetList( CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<AmenityReadDto>> GetList()
         {
-            IReadOnlyList<Amenity> amenities = await _amenityRepository.GetList( cancellationToken );
+            IReadOnlyList<Amenity> amenities = await _amenityRepository.GetReadOnlyList();
 
             return amenities.Select( amenity => new AmenityReadDto( amenity.Id, amenity.Name ) ).ToList();
         }
 
-        public async Task<int> Create( AmenityCreateDto dto, CancellationToken cancellationToken )
+        public async Task<int> Create( AmenityCreateDto dto )
         {
             Amenity amenity = new( dto.Name );
 
             _amenityRepository.Add( amenity );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
 
             return amenity.Id;
         }
 
-        public async Task Update( int id, AmenityUpdateDto dto, CancellationToken cancellationToken )
+        public async Task Update( int id, AmenityUpdateDto dto )
         {
-            Amenity? amenity = await _amenityRepository.TryGet( id, cancellationToken );
+            Amenity? amenity = await _amenityRepository.TryGet( id );
             if ( amenity is null )
             {
                 throw new DomainNotFoundException( $"Amenity with ID {id} could not be found." );
             }
 
             amenity.Update( dto.Name );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
 
-        public async Task Remove( int id, CancellationToken cancellationToken )
+        public async Task Remove( int id )
         {
-            Amenity? amenity = await _amenityRepository.TryGet( id, cancellationToken );
+            Amenity? amenity = await _amenityRepository.TryGet( id );
             if ( amenity is null )
             {
                 throw new DomainNotFoundException( $"Amenity with ID {id} could not be found." );
             }
 
             _amenityRepository.Delete( amenity );
-            await _unitOfWork.CommitAsync( cancellationToken );
+            await _unitOfWork.CommitAsync();
         }
     }
 }

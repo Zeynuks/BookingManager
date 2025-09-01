@@ -13,17 +13,16 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<RoomType?> TryGet( int id, CancellationToken cancellationToken )
+        public async Task<RoomType?> TryGet( int id )
         {
             return await _dbContext.RoomTypes
                 .Include( x => x.Services )
                 .Include( x => x.Amenities )
                 .AsSplitQuery()
-                .FirstOrDefaultAsync( x => x.Id == id, cancellationToken );
+                .FirstOrDefaultAsync( x => x.Id == id );
         }
 
-        public async Task<IReadOnlyList<RoomType>> GetListByProperty( int propertyId,
-            CancellationToken cancellationToken )
+        public async Task<IReadOnlyList<RoomType>> GetListByProperty( int propertyId )
         {
             return await _dbContext.RoomTypes
                 .Where( x => x.PropertyId == propertyId )
@@ -32,7 +31,7 @@ namespace Infrastructure.Repositories
                 .AsSplitQuery()
                 .AsNoTracking()
                 .OrderBy( x => x.Name )
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
 
 
@@ -51,24 +50,21 @@ namespace Infrastructure.Repositories
             return _dbContext.RoomTypes;
         }
 
-        public Task<int> Count(
-            IQueryable<RoomType> query,
-            CancellationToken cancellationToken )
+        public Task<int> Count( IQueryable<RoomType> query )
         {
-            return query.CountAsync( cancellationToken );
+            return query.CountAsync();
         }
 
         public async Task<IReadOnlyList<RoomType>> GetPage(
             IQueryable<RoomType> query,
             int page,
-            int size,
-            CancellationToken cancellationToken )
+            int size )
         {
             return await query
                 .AsNoTracking()
                 .Skip( ( page - 1 ) * size )
                 .Take( size )
-                .ToListAsync( cancellationToken );
+                .ToListAsync();
         }
     }
 }

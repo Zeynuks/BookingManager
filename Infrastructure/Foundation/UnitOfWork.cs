@@ -9,9 +9,9 @@
             _dbContext = dbContext;
         }
 
-        public async Task CommitAsync( CancellationToken cancellationToken )
+        public async Task CommitAsync()
         {
-            await _dbContext.SaveChangesAsync( cancellationToken );
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

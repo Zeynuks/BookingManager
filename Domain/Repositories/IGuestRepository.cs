@@ -4,8 +4,8 @@ namespace Domain.Repositories
 {
     public interface IGuestRepository
     {
-        Task<Guest?> TryGet( int id, CancellationToken cancellationToken );
-        Task<IReadOnlyList<Guest>> GetList( CancellationToken cancellationToken );
+        Task<Guest?> TryGet( int id );
+        Task<IReadOnlyList<Guest>> GetReadOnlyList();
         void Add( Guest guest );
         void Delete( Guest guest );
     }

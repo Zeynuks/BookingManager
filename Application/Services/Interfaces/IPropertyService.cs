@@ -4,10 +4,10 @@ namespace Application.Services.Interfaces
 {
     public interface IPropertyService
     {
-        Task<PropertyReadDto> GetById( int id, CancellationToken cancellationToken );
-        Task<IReadOnlyList<PropertyReadDto>> GetList( CancellationToken cancellationToken );
-        Task<int> Create( PropertyCreateDto dto, CancellationToken cancellationToken );
-        Task Update( int id, PropertyUpdateDto dto, CancellationToken cancellationToken );
-        Task Remove( int id, CancellationToken cancellationToken );
+        Task<PropertyReadDto> GetById( int id );
+        Task<IReadOnlyList<PropertyReadDto>> GetList();
+        Task<int> Create( PropertyCreateDto dto );
+        Task Update( int id, PropertyUpdateDto dto );
+        Task Remove( int id );
     }
 }
