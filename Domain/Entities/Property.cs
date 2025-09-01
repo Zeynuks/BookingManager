@@ -5,6 +5,11 @@ namespace Domain.Entities
 {
     public class Property
     {
+        private const decimal MinLatitude = -90m;
+        private const decimal MaxLatitude = 90m;
+        private const decimal MinLongitude = -180m;
+        private const decimal MaxLongitude = 180m;
+
         private readonly HashSet<RoomType> _roomTypes = [ ];
 
         public int Id { get; private init; }
@@ -78,7 +83,7 @@ namespace Domain.Entities
 
         private static decimal ValidateLatitude( decimal value )
         {
-            if ( value is < -90 or > 90 )
+            if ( value is < MinLatitude or > MaxLatitude )
             {
                 throw new DomainValidationException( "Latitude must be between -90 and 90." );
             }
@@ -88,7 +93,7 @@ namespace Domain.Entities
 
         private static decimal ValidateLongitude( decimal value )
         {
-            if ( value is < -180 or > 180 )
+            if ( value is < MinLongitude or > MaxLongitude )
             {
                 throw new DomainValidationException( "Longitude must be between -180 and 180." );
             }
